@@ -1,0 +1,16 @@
+main {
+  h1 {
+    text-align: center;
+  }
+
+  button {
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:focus {
+      outline: 2px solid #000;
+      outline-offset: 2px;
+    }
+  }
+}

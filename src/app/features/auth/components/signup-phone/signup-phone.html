@@ -1,0 +1,47 @@
+<main class="p-4 max-w-md mx-auto">
+  <h1 class="text-xl font-bold mb-4">Inscription par téléphone</h1>
+
+  <button
+    (click)="goBack()"
+    class="px-4 py-2 mb-2 bg-blue-200 text-gray-700 rounded hover:bg-gray-300 transition"
+  >
+    ← Retour
+  </button>
+
+  <!-- Formulaire pour saisir le numéro -->
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
+    <app-phone-field formControlName="phone"></app-phone-field>
+
+    <button
+      type="submit"
+      class="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed"
+      [disabled]="!isPhoneValid"
+    >
+      Valider le numéro
+    </button>
+  </form>
+  @if(isBlocked()){
+  <!-- Blocage après 3 OTP erronés -->
+  <div class="mt-4 text-red-600 font-semibold">
+    Champ bloqué. Réessayer dans {{ getBlockedSeconds() }} secondes.
+  </div>
+  } @if (showOtp && !isBlocked()) {
+  <!-- Affichage conditionnel du champ OTP -->
+  <div class="mt-6">
+    <h2 class="text-lg font-semibold mb-2">Entrez le code OTP : (1 2 3 4 5 6)</h2>
+    <app-otp-input (complete)="onOtpComplete($event)"></app-otp-input>
+
+    <p *ngIf="showOtp && remaining > 0" class="text-sm text-gray-600">
+      Renvoyer OTP dans {{ remaining }} secondes
+    </p>
+    <!-- Bouton pour renvoyer OTP -->
+    <button
+      class="mt-5 px-4 py-2 bg-gray-300 text-gray-700 rounded disabled:opacity-50"
+      [disabled]="!resendEnabled"
+      (click)="resendOtp()"
+    >
+      Renvoyer le code
+    </button>
+  </div>
+  }
+</main>

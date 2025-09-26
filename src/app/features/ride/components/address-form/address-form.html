@@ -1,0 +1,93 @@
+<form
+  [formGroup]="addressForm"
+  (ngSubmit)="onSubmit()"
+  class="flex flex-col gap-4 p-4 bg-gray-50 rounded-lg max-w-lg mx-auto"
+>
+  <div class="flex items-center justify-between">
+    <h2 class="font-semibold">Réserver un trajet</h2>
+    <button
+      type="button"
+      (click)="useMyPosition()"
+      class="text-sm px-2 py-1 bg-green-500 text-white rounded"
+    >
+      Utiliser ma position
+    </button>
+  </div>
+
+  <!-- Erreur générale -->
+  <div *ngIf="errorMessage" class="text-red-600 font-medium mb-2">
+    {{ errorMessage }}
+  </div>
+
+  <div class="relative">
+    <label for="pickup" class="text-sm font-medium"
+      >Point de départ (rue / quartier / repère)</label
+    >
+    <input
+      id="pickup"
+      type="text"
+      formControlName="pickup"
+      (input)="searchPickup()"
+      placeholder="Ex : Akwa, près du marché"
+      class="mt-1 w-full px-3 py-2 border rounded"
+    />
+    <!-- Erreur champ obligatoire -->
+    <div
+      *ngIf="submitted() && addressForm.get('pickup')?.invalid"
+      class="text-red-500 text-sm mt-1"
+    >
+      Le point de départ est requis.
+    </div>
+    <ul
+      *ngIf="suggestionsPickup.length"
+      class="absolute z-20 bg-white border rounded w-full mt-1 max-h-40 overflow-auto"
+    >
+      <li
+        *ngFor="let s of suggestionsPickup"
+        (mousedown)="selectPickup(s)"
+        class="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+      >
+        {{ s.label }}
+      </li>
+    </ul>
+  </div>
+
+  <div class="relative">
+    <label for="dropoff" class="text-sm font-medium">Destination (rue / quartier / repère)</label>
+    <input
+      id="dropoff"
+      type="text"
+      formControlName="dropoff"
+      (input)="searchDropoff()"
+      placeholder="Ex : Bonanjo, près du bureau de poste"
+      class="mt-1 w-full px-3 py-2 border rounded"
+    />
+    <!-- Erreur champ obligatoire -->
+    <div
+      *ngIf="submitted() && addressForm.get('dropoff')?.invalid"
+      class="text-red-500 text-sm mt-1"
+    >
+      La destination est requise.
+    </div>
+    <ul
+      *ngIf="suggestionsDropoff.length"
+      class="absolute z-20 bg-white border rounded w-full mt-1 max-h-40 overflow-auto"
+    >
+      <li
+        *ngFor="let s of suggestionsDropoff"
+        (mousedown)="selectDropoff(s)"
+        class="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+      >
+        {{ s.label }}
+      </li>
+    </ul>
+  </div>
+
+  <button
+    type="submit"
+    [disabled]="addressForm.invalid"
+    class="w-full px-4 py-2 rounded bg-blue-600 text-white disabled:bg-gray-400"
+  >
+    Demander la course
+  </button>
+</form>

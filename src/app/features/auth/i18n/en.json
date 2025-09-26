@@ -1,0 +1,24 @@
+{
+  "signup": {
+    "title": "Create an account",
+    "phoneOption": "By phone (OTP)",
+    "emailOption": "By email & password",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "cgu": "I accept the Terms of Service",
+    "marketing": "Subscribe to marketing",
+    "submit": "Submit",
+    "otpLabel": "One-time code",
+    "otpPlaceholder": "Enter OTP",
+    "otpError": "Invalid code",
+    "phoneError": "Phone number required or invalid format",
+    "emailError": "Invalid email",
+    "passwordMismatch": "Passwords do not match",
+    "passwordWeak": "Weak password",
+    "success": "Account successfully created",
+    "retryLater": "Too many attempts. Try again later."
+  }
+}

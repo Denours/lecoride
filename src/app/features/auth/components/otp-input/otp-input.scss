@@ -1,0 +1,19 @@
+.otp-input {
+  width: 2.5rem;
+  height: 2.5rem;
+  text-align: center;
+  font-size: 1.25rem;
+  border: 1px solid #ccc;
+  border-radius: 0.25rem;
+
+  &:focus {
+    border-color: #3b82f6; // Tailwind blue-500
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+  }
+}
+
+div {
+  margin-top: 1rem;
+  text-align: center;
+}

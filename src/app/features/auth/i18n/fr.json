@@ -1,0 +1,24 @@
+{
+  "signup": {
+    "title": "Créer un compte",
+    "phoneOption": "Par téléphone (OTP)",
+    "emailOption": "Par email & mot de passe",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "email": "Email",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmez le mot de passe",
+    "cgu": "J’accepte les Conditions Générales d’Utilisation",
+    "marketing": "S’abonner aux communications marketing",
+    "submit": "Valider",
+    "otpLabel": "Code à usage unique",
+    "otpPlaceholder": "Entrez le code OTP",
+    "otpError": "Code incorrect",
+    "phoneError": "Numéro requis ou format invalide",
+    "emailError": "Email invalide",
+    "passwordMismatch": "Les mots de passe ne correspondent pas",
+    "passwordWeak": "Mot de passe faible",
+    "success": "Compte créé avec succès",
+    "retryLater": "Trop d’essais. Réessayez plus tard."
+  }
+}

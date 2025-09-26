@@ -1,0 +1,14 @@
+<div role="group" aria-label="OTP code" class="flex gap-2 justify-center">
+  @for (i of inputs; track $index) {
+  <input
+    #otp
+    maxlength="1"
+    inputmode="numeric"
+    pattern="[0-9]*"
+    class="otp-input"
+    (input)="onInput($event, $index)"
+    (keydown)="onKey($event, $index)"
+    (paste)="onPaste($event)"
+  />
+  }
+</div>

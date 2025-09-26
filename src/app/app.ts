@@ -1,12 +1,31 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ToastService, ToastMessage } from './features/auth/services/toast';
 import { RouterOutlet } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DestroyRef } from '@angular/core';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  standalone: true,
+  imports: [CommonModule, RouterOutlet],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrls: ['./app.scss'],
 })
 export class App {
-  protected readonly title = signal('lecoride');
+  toasts: ToastMessage[] = [];
+  private destroyRef = inject(DestroyRef); // ✅ injecte le DestroyRef
+
+  constructor(private toast: ToastService) {
+    // On peut abonner directement dans le constructeur
+    this.toast.messages$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((msg) => {
+        this.toasts.push(msg);
+        const duration = msg.duration ?? 3000;
+        setTimeout(() => {
+          this.toasts = this.toasts.filter((t) => t !== msg);
+        }, duration);
+      });
+  }
 }

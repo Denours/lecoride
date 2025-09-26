@@ -1,0 +1,21 @@
+<div class="phone-field">
+  <label for="phone">Numéro de téléphone</label>
+
+  <!-- input lié au FormControl interne -->
+  <input
+    id="phone"
+    type="tel"
+    [formControl]="control"
+    placeholder="+237 699 999 999 ou +237 6 99 99 99 99"
+    class="input"
+    (blur)="markTouched()"
+    inputmode="tel"
+    aria-describedby="phone-error"
+  />
+
+  @if (control.touched && control.invalid) {
+  <p id="phone-error" aria-live="polite" class="error">
+    {{ errorMsg }}
+  </p>
+  }
+</div>

@@ -1,0 +1,10 @@
+<main class="p-4 max-w-md mx-auto">
+  <h1 class="text-xl font-bold mb-4">Inscription par email</h1>
+  <button
+    (click)="goBack()"
+    class="px-4 py-2 bg-blue-200 text-gray-700 rounded hover:bg-gray-300 transition"
+  >
+    ← Retour
+  </button>
+  <app-email-password-form (formSubmit)="onFormSubmit($event)"></app-email-password-form>
+</main>
