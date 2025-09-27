@@ -46,7 +46,7 @@ export class EstimatePanel {
     this.distanceKm.set(distance);
 
     // Tarif réaliste (F CFA)
-    const tarifParKm = 250; // F CFA par km
+    const tarifParKm = 50; // F CFA par km
     const fraisFixe = 500; // F CFA fixe
 
     const prix = Math.round(distance * tarifParKm + fraisFixe);
