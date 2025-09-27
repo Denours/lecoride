@@ -20,15 +20,13 @@
   </div>
 
   <div class="relative">
-    <label for="pickup" class="text-sm font-medium"
-      >Point de départ (rue / quartier / repère)</label
-    >
+    <label for="pickup" class="text-sm font-medium">Point de départ (rue / quartier)</label>
     <input
       id="pickup"
       type="text"
       formControlName="pickup"
       (input)="searchPickup()"
-      placeholder="Ex : Akwa, près du marché"
+      placeholder="Ex : Akwa, Douala"
       class="mt-1 w-full px-3 py-2 border rounded"
     />
     <!-- Erreur champ obligatoire -->
@@ -51,15 +49,14 @@
       </li>
     </ul>
   </div>
-
   <div class="relative">
-    <label for="dropoff" class="text-sm font-medium">Destination (rue / quartier / repère)</label>
+    <label for="dropoff" class="text-sm font-medium">Destination (rue / quartier)</label>
     <input
       id="dropoff"
       type="text"
       formControlName="dropoff"
       (input)="searchDropoff()"
-      placeholder="Ex : Bonanjo, près du bureau de poste"
+      placeholder="Ex : Bonanjo, Douala"
       class="mt-1 w-full px-3 py-2 border rounded"
     />
     <!-- Erreur champ obligatoire -->
@@ -85,7 +82,7 @@
 
   <button
     type="submit"
-    [disabled]="addressForm.invalid || !isValidPickup() || !isValidDropoff()"
+    [disabled]="!canSubmit()"
     class="w-full px-4 py-2 rounded bg-blue-600 text-white disabled:bg-gray-400"
   >
     Demander la course

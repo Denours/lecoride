@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { RideSearchStore } from '../../store/ride-search.store';
@@ -15,78 +15,78 @@ export class AddressForm {
   private readonly fb = inject(FormBuilder);
   private readonly store = inject(RideSearchStore);
   private readonly geo = inject(GeoService);
-  isValidPickup = signal(false);
-  isValidDropoff = signal(false);
 
   submitted = signal(false);
   suggestionsPickup: any[] = [];
   suggestionsDropoff: any[] = [];
-  errorMessage: string | null = null; // pour messages généraux
+  errorMessage: string | null = null;
 
+  // Champs de formulaire
   addressForm = this.fb.group({
     pickup: ['', Validators.required],
     dropoff: ['', Validators.required],
   });
 
-  // recherche automatique des adresses
+  // Signaux pour savoir si la valeur sélectionnée est valide
+  private readonly pickupValid = signal(false);
+  private readonly dropoffValid = signal(false);
+
+  // Computed pour activer le bouton uniquement si les deux valeurs sont valides
+  canSubmit = computed(() => this.pickupValid() && this.dropoffValid());
+
+  // Recherche automatique
   searchPickup() {
     const q = this.addressForm.get('pickup')?.value || '';
+    this.pickupValid.set(false); // reset validation à chaque saisie
     if (!q) {
       this.suggestionsPickup = [];
-      this.isValidPickup.set(false); // non valide si champ effacé
       return;
     }
-    this.geo.autocomplete(q).subscribe((list) => {
-      if (!list.length) {
-        this.errorMessage = 'Aucun point de départ trouvé pour cette saisie.';
-      } else {
-        this.errorMessage = null;
-      }
+    this.geo.autocomplete(q).subscribe(list => {
       this.suggestionsPickup = list;
+      this.errorMessage = list.length ? null : 'Aucun point de départ trouvé';
     });
   }
 
   searchDropoff() {
     const q = this.addressForm.get('dropoff')?.value || '';
+    this.dropoffValid.set(false); // reset validation à chaque saisie
     if (!q) {
       this.suggestionsDropoff = [];
-      this.isValidDropoff.set(false); // non valide si champ effacé
       return;
     }
-    this.geo.autocomplete(q).subscribe((list) => {
-      if (!list.length) {
-        this.errorMessage = "Aucun point d'arrivée trouvé pour cette saisie.";
-      } else {
-        this.errorMessage = null;
-      }
+    this.geo.autocomplete(q).subscribe(list => {
       this.suggestionsDropoff = list;
+      this.errorMessage = list.length ? null : "Aucune destination trouvée";
     });
   }
 
+  // Sélection de l'adresse
   selectPickup(item: any) {
     this.addressForm.patchValue({ pickup: item.label });
     this.suggestionsPickup = [];
     this.store.setPickup({ lat: item.lat, lng: item.lng, label: item.label });
-    this.isValidPickup.set(true); // ✅ pickup validé
+    this.pickupValid.set(true); // maintenant c'est valide
   }
 
   selectDropoff(item: any) {
     this.addressForm.patchValue({ dropoff: item.label });
     this.suggestionsDropoff = [];
     this.store.setDropoff({ lat: item.lat, lng: item.lng, label: item.label });
-    this.isValidDropoff.set(true); // ✅ dropoff validé
+    this.dropoffValid.set(true); // maintenant c'est valide
   }
 
   useMyPosition() {
     if (!navigator.geolocation) return alert('Géolocalisation non disponible');
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
+      pos => {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
         this.addressForm.patchValue({ pickup: 'Ma position (GPS)' });
         this.store.setPickup({ lat, lng, label: 'Position actuelle' });
+        this.pickupValid.set(true);
       },
-      (err) => {
+      err => {
         console.error(err);
         alert("Impossible d'obtenir la position. Vérifiez les permissions.");
       },
@@ -98,25 +98,11 @@ export class AddressForm {
     this.submitted.set(true);
     const pickup = this.store.pickup();
     const dropoff = this.store.dropoff();
-
-    if (!pickup) {
-      this.errorMessage = 'Veuillez renseigner un point de départ valide.';
+    if (!pickup || !dropoff || !this.canSubmit()) {
+      this.errorMessage = 'Veuillez choisir des adresses valides dans la liste';
       return;
     }
-
-    if (!dropoff) {
-      this.errorMessage = 'Veuillez renseigner une destination valide.';
-      return;
-    }
-
-    if (pickup.lat === dropoff.lat && pickup.lng === dropoff.lng) {
-      this.errorMessage = 'Le point de départ et la destination ne peuvent pas être identiques.';
-      return;
-    }
-
-    if (this.addressForm.valid && pickup && dropoff) {
-      this.errorMessage = null;
-      console.log('Demande initiée (frontend mock)', { pickup, dropoff });
-    }
+    this.errorMessage = null;
+    console.log('Demande initiée', { pickup, dropoff });
   }
 }
