@@ -15,6 +15,8 @@ export class AddressForm {
   private readonly fb = inject(FormBuilder);
   private readonly store = inject(RideSearchStore);
   private readonly geo = inject(GeoService);
+  isValidPickup = signal(false);
+  isValidDropoff = signal(false);
 
   submitted = signal(false);
   suggestionsPickup: any[] = [];
@@ -31,6 +33,7 @@ export class AddressForm {
     const q = this.addressForm.get('pickup')?.value || '';
     if (!q) {
       this.suggestionsPickup = [];
+      this.isValidPickup.set(false); // non valide si champ effacé
       return;
     }
     this.geo.autocomplete(q).subscribe((list) => {
@@ -47,6 +50,7 @@ export class AddressForm {
     const q = this.addressForm.get('dropoff')?.value || '';
     if (!q) {
       this.suggestionsDropoff = [];
+      this.isValidDropoff.set(false); // non valide si champ effacé
       return;
     }
     this.geo.autocomplete(q).subscribe((list) => {
@@ -63,12 +67,14 @@ export class AddressForm {
     this.addressForm.patchValue({ pickup: item.label });
     this.suggestionsPickup = [];
     this.store.setPickup({ lat: item.lat, lng: item.lng, label: item.label });
+    this.isValidPickup.set(true); // ✅ pickup validé
   }
 
   selectDropoff(item: any) {
     this.addressForm.patchValue({ dropoff: item.label });
     this.suggestionsDropoff = [];
     this.store.setDropoff({ lat: item.lat, lng: item.lng, label: item.label });
+    this.isValidDropoff.set(true); // ✅ dropoff validé
   }
 
   useMyPosition() {
