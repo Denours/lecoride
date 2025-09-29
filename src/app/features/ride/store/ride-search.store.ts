@@ -12,7 +12,8 @@ export interface RidePoint {
 export class RideSearchStore {
   readonly pickup = signal<RidePoint | null>(null);
   readonly dropoff = signal<RidePoint | null>(null);
-
+  distance = signal<number | null>(null);   //  distance en km
+  duration = signal<number | null>(null);   //  durée en minutes
   setPickup(p: RidePoint | null) {
     this.pickup.set(p);
   }

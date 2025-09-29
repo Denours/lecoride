@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { RideSearchStore } from '../../store/ride-search.store';
@@ -15,6 +15,8 @@ export class AddressForm {
   private readonly fb = inject(FormBuilder);
   private readonly store = inject(RideSearchStore);
   private readonly geo = inject(GeoService);
+  @Output() requestRide = new EventEmitter<void>();
+  canRequestRide = false;
 
   submitted = signal(false);
   suggestionsPickup: any[] = [];
@@ -42,7 +44,7 @@ export class AddressForm {
       this.suggestionsPickup = [];
       return;
     }
-    this.geo.autocomplete(q).subscribe(list => {
+    this.geo.autocomplete(q).subscribe((list) => {
       this.suggestionsPickup = list;
       this.errorMessage = list.length ? null : 'Aucun point de départ trouvé';
     });
@@ -55,9 +57,9 @@ export class AddressForm {
       this.suggestionsDropoff = [];
       return;
     }
-    this.geo.autocomplete(q).subscribe(list => {
+    this.geo.autocomplete(q).subscribe((list) => {
       this.suggestionsDropoff = list;
-      this.errorMessage = list.length ? null : "Aucune destination trouvée";
+      this.errorMessage = list.length ? null : 'Aucune destination trouvée';
     });
   }
 
@@ -79,14 +81,14 @@ export class AddressForm {
   useMyPosition() {
     if (!navigator.geolocation) return alert('Géolocalisation non disponible');
     navigator.geolocation.getCurrentPosition(
-      pos => {
+      (pos) => {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
         this.addressForm.patchValue({ pickup: 'Ma position (GPS)' });
         this.store.setPickup({ lat, lng, label: 'Position actuelle' });
         this.pickupValid.set(true);
       },
-      err => {
+      (err) => {
         console.error(err);
         alert("Impossible d'obtenir la position. Vérifiez les permissions.");
       },
@@ -104,5 +106,10 @@ export class AddressForm {
     }
     this.errorMessage = null;
     console.log('Demande initiée', { pickup, dropoff });
+  }
+
+  // quand on clique :
+  openRideRequestModal() {
+    this.requestRide.emit();
   }
 }

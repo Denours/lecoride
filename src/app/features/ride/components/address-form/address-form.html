@@ -4,7 +4,7 @@
   class="flex flex-col gap-4 p-4 bg-gray-50 rounded-lg max-w-lg mx-auto"
 >
   <div class="flex items-center justify-between">
-    <h2 class="font-semibold">Réserver un trajet</h2>
+    <h2 class="font-semibold text-blue-900">Réserver un trajet</h2>
     <button
       type="button"
       (click)="useMyPosition()"
@@ -15,12 +15,14 @@
   </div>
 
   <!-- Erreur générale -->
-  <div *ngIf="errorMessage" class="text-red-600 font-medium mb-2">
+  @if (errorMessage) {
+  <div class="text-red-600 font-medium mb-2">
     {{ errorMessage }}
   </div>
+  }
 
   <div class="relative">
-    <label for="pickup" class="text-sm font-medium">Point de départ (rue / quartier)</label>
+    <label for="pickup" class="text-sm font-medium">Adresse de départ (rue / quartier)</label>
     <input
       id="pickup"
       type="text"
@@ -30,16 +32,10 @@
       class="mt-1 w-full px-3 py-2 border rounded"
     />
     <!-- Erreur champ obligatoire -->
-    <div
-      *ngIf="submitted() && addressForm.get('pickup')?.invalid"
-      class="text-red-500 text-sm mt-1"
-    >
-      Le point de départ est requis.
-    </div>
-    <ul
-      *ngIf="suggestionsPickup.length"
-      class="absolute z-20 bg-white border rounded w-full mt-1 max-h-40 overflow-auto"
-    >
+    @if (submitted() && addressForm.get('pickup')?.invalid) {
+    <div class="text-red-500 text-sm mt-1">Le point de départ est requis.</div>
+    } @if (suggestionsPickup.length) {
+    <ul class="absolute z-20 bg-white border rounded w-full mt-1 max-h-40 overflow-auto">
       <li
         *ngFor="let s of suggestionsPickup"
         (mousedown)="selectPickup(s)"
@@ -48,9 +44,10 @@
         {{ s.label }}
       </li>
     </ul>
+    }
   </div>
   <div class="relative">
-    <label for="dropoff" class="text-sm font-medium">Destination (rue / quartier)</label>
+    <label for="dropoff" class="text-sm font-medium">Adresse de destination (rue / quartier)</label>
     <input
       id="dropoff"
       type="text"
@@ -60,16 +57,10 @@
       class="mt-1 w-full px-3 py-2 border rounded"
     />
     <!-- Erreur champ obligatoire -->
-    <div
-      *ngIf="submitted() && addressForm.get('dropoff')?.invalid"
-      class="text-red-500 text-sm mt-1"
-    >
-      La destination est requise.
-    </div>
-    <ul
-      *ngIf="suggestionsDropoff.length"
-      class="absolute z-20 bg-white border rounded w-full mt-1 max-h-40 overflow-auto"
-    >
+    @if (submitted() && addressForm.get('dropoff')?.invalid) {
+    <div class="text-red-500 text-sm mt-1">La destination est requise.</div>
+    } @if (suggestionsDropoff.length) {
+    <ul class="absolute z-20 bg-white border rounded w-full mt-1 max-h-40 overflow-auto">
       <li
         *ngFor="let s of suggestionsDropoff"
         (mousedown)="selectDropoff(s)"
@@ -78,12 +69,14 @@
         {{ s.label }}
       </li>
     </ul>
+    }
   </div>
 
   <button
     type="submit"
     [disabled]="!canSubmit()"
     class="w-full px-4 py-2 rounded bg-blue-600 text-white disabled:bg-gray-400"
+    (click)="openRideRequestModal()"
   >
     Demander la course
   </button>

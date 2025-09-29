@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./signup-email-check.scss'],
 })
 export class SignupEmailCheck {
-  constructor(private router: Router) {}
+  constructor(private readonly router: Router) {}
 
   goHome() {
     this.router.navigate(['/']);
@@ -16,6 +16,6 @@ export class SignupEmailCheck {
 
   confirmEmail() {
     // Simulation : on considère que l’utilisateur a cliqué sur le lien dans l’email
-    this.router.navigate(['/']); // tu peux remplacer par la route finale de ton app
+    this.router.navigate(['/ride/search']); // tu peux remplacer par la route finale de ton app
   }
 }
