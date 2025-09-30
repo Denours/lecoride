@@ -26,17 +26,16 @@ export class EmailPasswordForm {
     marketing?: boolean;
   }>();
 
-  constructor(private fb: FormBuilder, private api: AuthApi) {
+  constructor(private readonly fb: FormBuilder, private readonly api: AuthApi) {
     this.form = this.fb.group(
       {
         firstName: ['', Validators.required],
         lastName: ['', Validators.required],
         email: ['', [Validators.required, Validators.email]],
-        password: ['', [
-  Validators.required,
-  Validators.minLength(8),
-  this.strongPasswordValidator()
-]],
+        password: [
+          '',
+          [Validators.required, Validators.minLength(8), this.strongPasswordValidator()],
+        ],
 
         confirm: ['', Validators.required],
         cgu: [false, Validators.requiredTrue],
@@ -60,7 +59,7 @@ export class EmailPasswordForm {
     if (pw.length >= 8) score++;
     if (/[A-Z]/.test(pw)) score++;
     if (/[a-z]/.test(pw)) score++;
-    if (/[0-9]/.test(pw)) score++;
+    if (/\d/.test(pw)) score++;
     if (/[\W_]/.test(pw)) score++;
     this.passwordStrength = Math.min(score, 4);
   }
@@ -79,17 +78,16 @@ export class EmailPasswordForm {
   }
 
   strongPasswordValidator() {
-  return (control: AbstractControl): ValidationErrors | null => {
-    const value = control.value || '';
-    let score = 0;
-    if (/[A-Z]/.test(value)) score++;
-    if (/[a-z]/.test(value)) score++;
-    if (/[0-9]/.test(value)) score++;
-    if (/[\W_]/.test(value)) score++;
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value || '';
+      let score = 0;
+      if (/[A-Z]/.test(value)) score++;
+      if (/[a-z]/.test(value)) score++;
+      if (/\d/.test(value)) score++;
+      if (/[\W_]/.test(value)) score++;
 
-    // Au moins 3 critères requis
-    return score >= 3 ? null : { weakPassword: true };
-  };
-}
-
+      // Au moins 3 critères requis
+      return score >= 3 ? null : { weakPassword: true };
+    };
+  }
 }

@@ -1,17 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { delay, Observable, of } from 'rxjs';
+import { User } from '../models/user.type';
 
 @Injectable({ providedIn: 'root' })
 export class AuthApi {
-  private base = '/auth/signup';
+  private readonly base = '/auth/signup';
 
-  constructor(private http: HttpClient) {}
-
-  /** Demande d'envoi d'OTP pour un numéro de téléphone */
-  // requestOtp(phoneE164: string): Observable<any> {
-  //   return this.http.post(`${this.base}/phone/request-otp`, { phone: phoneE164 });
-  // }
+  constructor(private readonly http: HttpClient) {}
 
   /** Vérification OTP reçu par SMS */
   verifyOtp(phoneE164: string, otp: string): Observable<{ token: string }> {
@@ -33,7 +29,7 @@ export class AuthApi {
   }
 
   /** Récupération des infos utilisateur */
-  me(): Observable<any> {
-    return this.http.get('/me');
+  me(): Observable<User> {
+    return this.http.get<User>('/me');
   }
 }

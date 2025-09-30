@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { RideSearchStore } from '../../store/ride-search.store';
 import { GeoService } from '../../services/geo';
+import { AddressSuggestion } from '../../models/address-suggestion.type';
 
 @Component({
   selector: 'app-address-form',
@@ -19,8 +20,8 @@ export class AddressForm {
   canRequestRide = false;
 
   submitted = signal(false);
-  suggestionsPickup: any[] = [];
-  suggestionsDropoff: any[] = [];
+  suggestionsPickup: AddressSuggestion[] = [];
+  suggestionsDropoff: AddressSuggestion[] = [];
   errorMessage: string | null = null;
 
   // Champs de formulaire
@@ -64,14 +65,14 @@ export class AddressForm {
   }
 
   // Sélection de l'adresse
-  selectPickup(item: any) {
+  selectPickup(item: AddressSuggestion) {
     this.addressForm.patchValue({ pickup: item.label });
     this.suggestionsPickup = [];
     this.store.setPickup({ lat: item.lat, lng: item.lng, label: item.label });
     this.pickupValid.set(true); // maintenant c'est valide
   }
 
-  selectDropoff(item: any) {
+  selectDropoff(item: AddressSuggestion) {
     this.addressForm.patchValue({ dropoff: item.label });
     this.suggestionsDropoff = [];
     this.store.setDropoff({ lat: item.lat, lng: item.lng, label: item.label });

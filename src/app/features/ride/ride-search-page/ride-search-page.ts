@@ -5,12 +5,14 @@ import { EstimatePanel } from '../components/estimate-panel/estimate-panel';
 import { RideSearchStore } from '../store/ride-search.store';
 import { CommonModule } from '@angular/common';
 import { RideRequestModal } from '../components/ride-request-modal/ride-request-modal';
+import { Logo } from '../../logo/logo';
 
 @Component({
   selector: 'app-ride-search-page',
   standalone: true,
-  imports: [CommonModule, AddressForm, RideMap, EstimatePanel, RideRequestModal],
+  imports: [CommonModule, AddressForm, RideMap, EstimatePanel, RideRequestModal, Logo],
   template: `
+    <app-logo />
     <section class="p-6 max-w-4xl mx-auto flex flex-col gap-6">
       <h1 class="text-2xl font-bold">Réserver un trajet</h1>
       <app-address-form (requestRide)="openModal()"></app-address-form>

@@ -11,18 +11,17 @@ import { AuthApi } from '../../services/auth-api';
   styleUrls: ['./signup-success.scss'],
 })
 export class SignupSuccess implements OnInit {
-
   loading = true;
   errorMsg?: string;
 
   constructor(
-    private route: ActivatedRoute,
+    private readonly route: ActivatedRoute,
     public router: Router,
-    private api: AuthApi
+    private readonly api: AuthApi
   ) {}
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe((params) => {
       const token = params['token'];
       if (!token) {
         this.loading = false;
@@ -31,20 +30,22 @@ export class SignupSuccess implements OnInit {
       }
 
       this.api.confirmEmail(token).subscribe({
-        next: res => {
+        next: (res) => {
           localStorage.setItem('auth_token', res.token);
           this.api.me().subscribe({
-            next: () => this.router.navigate(['/home']),
+            next: () => {
+              this.router.navigate(['/']);
+            },
             error: () => {
               this.loading = false;
               this.errorMsg = 'Impossible de récupérer les informations utilisateur.';
-            }
+            },
           });
         },
         error: () => {
           this.loading = false;
           this.errorMsg = 'Token invalide ou expiré.';
-        }
+        },
       });
     });
   }

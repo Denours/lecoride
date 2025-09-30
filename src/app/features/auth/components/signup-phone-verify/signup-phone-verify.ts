@@ -17,7 +17,7 @@ export class SignupPhoneVerify {
   loading = false;
   error?: string;
 
-  constructor(private api: AuthApi, public store: SignupStore, private router: Router) {}
+  constructor(private readonly api: AuthApi, public store: SignupStore, private readonly router: Router) {}
 
   get now(): number {
     return Date.now();

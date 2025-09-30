@@ -1,9 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ToastService, ToastMessage } from './features/auth/services/toast';
 import { RouterOutlet } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { DestroyRef } from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -14,18 +13,16 @@ import { DestroyRef } from '@angular/core';
 })
 export class App {
   toasts: ToastMessage[] = [];
-  private destroyRef = inject(DestroyRef); // ✅ injecte le DestroyRef
+  private readonly destroyRef = inject(DestroyRef); // injecte le DestroyRef
 
-  constructor(private toast: ToastService) {
+  constructor(private readonly toast: ToastService) {
     // On peut abonner directement dans le constructeur
-    this.toast.messages$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((msg) => {
-        this.toasts.push(msg);
-        const duration = msg.duration ?? 3000;
-        setTimeout(() => {
-          this.toasts = this.toasts.filter((t) => t !== msg);
-        }, duration);
-      });
+    this.toast.messages$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((msg) => {
+      this.toasts.push(msg);
+      const duration = msg.duration ?? 3000;
+      setTimeout(() => {
+        this.toasts = this.toasts.filter((t) => t !== msg);
+      }, duration);
+    });
   }
 }

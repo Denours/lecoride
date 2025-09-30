@@ -1,11 +1,12 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RideDetails } from '../../models/ride-details.type';
 
 @Component({
   selector: 'app-ride-request-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NgFor],
   template: `
     <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <!-- WRAPPER scrollable -->
@@ -39,7 +40,7 @@ import { FormsModule } from '@angular/forms';
             >
               <span class="text-2xl">{{ option.icon }}</span>
               <span>{{ option.label }}</span>
-              <span class="text-sm text-gray-600">{{ option.price }} FCFA</span>
+              <span class="text-sm text-gray-600">{{ option.price }} FCFA * coef</span>
             </button>
           </div>
         </div>
@@ -101,7 +102,7 @@ export class RideRequestModal {
   @Input() durationMin: number | null = null;
 
   @Output() toClose = new EventEmitter<void>();
-  @Output() toConfirm = new EventEmitter<any>();
+  @Output() toConfirm = new EventEmitter<RideDetails>();
 
   // Données internes
   vehicleOptions = [

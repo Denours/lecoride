@@ -1,15 +1,64 @@
+<app-logo />
 <main class="p-4 max-w-md mx-auto">
   <h1 class="text-xl font-bold mb-4">Inscription par téléphone</h1>
 
   <button
     (click)="goBack()"
-    class="px-4 py-2 mb-2 bg-blue-200 text-gray-700 rounded hover:bg-gray-300 transition"
+    class="px-4 py-2 mb-4 bg-blue-200 text-gray-700 rounded hover:bg-gray-300 transition"
   >
     ← Retour
   </button>
 
-  <!-- Formulaire pour saisir le numéro -->
   <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
+    <!-- Champ Prénom -->
+    <div>
+      <label for="firstName" class="block mb-1">Prénom</label>
+      <input
+        id="firstName"
+        type="text"
+        formControlName="firstName"
+        placeholder="Entrez votre prénom"
+        class="w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:outline-none border-blue-300"
+        [attr.aria-invalid]="
+          form.get('firstName')?.invalid && form.get('firstName')?.touched ? 'true' : 'false'
+        "
+        aria-describedby="firstName-error"
+      />
+      <p
+        id="firstName-error"
+        class="mt-2 text-sm text-red-600"
+        *ngIf="form.get('firstName')?.invalid && form.get('firstName')?.touched"
+        aria-live="polite"
+        role="alert"
+      >
+        Prénom requis
+      </p>
+    </div>
+
+    <!-- Champ Nom -->
+    <div>
+      <label for="lastName" class="block mb-1">Nom</label>
+      <input
+        id="lastName"
+        type="text"
+        formControlName="lastName"
+        placeholder="Entrez votre nom"
+        class="w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:outline-none border-blue-300"
+        [attr.aria-invalid]="
+          form.get('lastName')?.invalid && form.get('lastName')?.touched ? 'true' : 'false'
+        "
+        aria-describedby="lastName-error"
+      />
+      <p
+        id="lastName-error"
+        class="mt-2 text-sm text-red-600"
+        *ngIf="form.get('lastName')?.invalid && form.get('lastName')?.touched"
+        aria-live="polite"
+        role="alert"
+      >
+        Nom requis
+      </p>
+    </div>
     <app-phone-field formControlName="phone"></app-phone-field>
 
     <button

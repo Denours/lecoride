@@ -14,11 +14,12 @@ import { PhoneField } from '../phone-field/phone-field';
 import { OtpInput } from '../otp-input/otp-input';
 import { SignupStore } from '../../store/signup.store';
 import { Subscription } from 'rxjs';
+import { Logo } from '../../../logo/logo';
 
 @Component({
   selector: 'app-signup-phone',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, PhoneField, OtpInput],
+  imports: [CommonModule, ReactiveFormsModule, PhoneField, OtpInput, Logo],
   templateUrl: './signup-phone.html',
   styleUrls: ['./signup-phone.scss'],
 })
@@ -41,6 +42,8 @@ export class SignupPhone implements OnDestroy {
     private readonly timer: OtpTimer
   ) {
     this.form = this.fb.group({
+      firstName: ['', [Validators.required]],
+      lastName: ['', [Validators.required]],
       phone: ['', [Validators.required, this.e164Validator]],
     });
 
@@ -63,6 +66,13 @@ export class SignupPhone implements OnDestroy {
   /** Soumission du numéro de téléphone */
   onSubmit() {
     const phoneE164 = this.phoneField.getE164();
+    const firstName = this.form.get('firstName')?.value?.trim();
+    const lastName = this.form.get('lastName')?.value?.trim();
+
+    if (!firstName || !lastName) {
+      alert('Veuillez saisir votre prénom et nom.');
+      return;
+    }
 
     if (!phoneE164) {
       // numéro invalide, bloquer l'action
@@ -70,10 +80,12 @@ export class SignupPhone implements OnDestroy {
       return;
     }
 
+    console.log('Nom complet :', firstName, lastName);
     console.log('Numéro saisi :', phoneE164);
 
-    // ⚡ Ici, tu simules la réussite de l’envoi du code (frontend only)
-    alert('Code OTP envoyé au numéro : ' + phoneE164);
+    // Simulation envoi OTP
+    alert(`Code OTP envoyé à ${firstName} ${lastName} sur le numéro : ${phoneE164}`);
+
 
     this.store.setPhone(phoneE164);
     this.showOtp = true; // on affiche le champ OTP
@@ -104,10 +116,10 @@ export class SignupPhone implements OnDestroy {
       }
     }
   }
-get isPhoneValid(): boolean {
-  // phoneField peut être undefined au début du ngAfterViewInit
-  return !!this.phoneField && !!this.phoneField.getE164();
-}
+  get isPhoneValid(): boolean {
+    // phoneField peut être undefined au début du ngAfterViewInit
+    return !!this.phoneField && !!this.phoneField.getE164();
+  }
 
   /** Retourne vrai si blocage actif */
   isBlocked() {

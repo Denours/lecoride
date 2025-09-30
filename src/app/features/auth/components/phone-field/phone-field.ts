@@ -30,7 +30,9 @@ import { Subscription } from 'rxjs';
 })
 export class PhoneField implements ControlValueAccessor, OnDestroy {
   // validator as ValidatorFn compatible AbstractControl
-  private e164Validator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+  private readonly e164Validator: ValidatorFn = (
+    control: AbstractControl
+  ): ValidationErrors | null => {
     const v = control.value;
     if (!v) return null; // required géré séparément
     try {
@@ -46,10 +48,10 @@ export class PhoneField implements ControlValueAccessor, OnDestroy {
     nonNullable: false,
   });
 
-  private _sub: Subscription;
+  private readonly _sub: Subscription;
 
   // fonctions fournies par Angular via registerOnChange / registerOnTouched
-  private onChange: (value: any) => void = () => {};
+  private onChange: (value: string | null) => void = () => {};
   private onTouched: () => void = () => {};
 
   constructor() {
@@ -60,16 +62,16 @@ export class PhoneField implements ControlValueAccessor, OnDestroy {
   }
 
   // ControlValueAccessor impl.
-  writeValue(value: any): void {
+  writeValue(value: string | null): void {
     // évite d'émettre valueChanges
     this.control.setValue(value ?? '', { emitEvent: false });
   }
 
-  registerOnChange(fn: any): void {
+  registerOnChange(fn: (value: string | null) => void): void {
     this.onChange = fn;
   }
 
-  registerOnTouched(fn: any): void {
+  registerOnTouched(fn: () => void): void {
     this.onTouched = fn;
   }
 

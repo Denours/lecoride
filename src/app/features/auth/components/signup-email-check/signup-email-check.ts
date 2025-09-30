@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { Logo } from '../../../logo/logo';
 
 @Component({
   selector: 'app-signup-email-check',
   standalone: true,
+  imports: [Logo],
   templateUrl: './signup-email-check.html',
   styleUrls: ['./signup-email-check.scss'],
 })

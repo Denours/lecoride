@@ -4,16 +4,21 @@ import { Router } from '@angular/router';
 import { EmailPasswordForm } from '../email-password-form/email-password-form';
 import { SignupStore } from '../../store/signup.store';
 import { AuthApi } from '../../services/auth-api';
+import { Logo } from '../../../logo/logo';
 
 @Component({
   selector: 'app-signup-email',
   standalone: true,
-  imports: [CommonModule, EmailPasswordForm],
+  imports: [CommonModule, EmailPasswordForm, Logo],
   templateUrl: './signup-email.html',
   styleUrls: ['./signup-email.scss'],
 })
 export class SignupEmail {
-  constructor(public store: SignupStore, private router: Router, private api: AuthApi) {}
+  constructor(
+    public store: SignupStore,
+    private readonly router: Router,
+    private readonly api: AuthApi
+  ) {}
 
   /**
    * Callback lorsque le formulaire email/password est soumis avec succès.
