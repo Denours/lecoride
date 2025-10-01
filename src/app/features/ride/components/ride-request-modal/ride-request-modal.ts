@@ -76,11 +76,12 @@ import { RideDetails } from '../../models/ride-details.type';
             <input type="radio" name="timeOption" value="schedule" [(ngModel)]="timeOption" />
             Programmer
           </label>
-
-          <div *ngIf="timeOption === 'schedule'" class="mt-2 flex gap-2">
+          @if (timeOption === 'schedule') {
+          <div class="mt-2 flex gap-2">
             <input type="date" [(ngModel)]="scheduledDate" class="border rounded p-1" />
             <input type="time" [(ngModel)]="scheduledTime" class="border rounded p-1" />
           </div>
+          }
         </div>
 
         <!-- Validation -->

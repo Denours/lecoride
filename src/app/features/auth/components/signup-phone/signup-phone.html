@@ -24,15 +24,11 @@
         "
         aria-describedby="firstName-error"
       />
-      <p
-        id="firstName-error"
-        class="mt-2 text-sm text-red-600"
-        *ngIf="form.get('firstName')?.invalid && form.get('firstName')?.touched"
-        aria-live="polite"
-        role="alert"
-      >
+      @if (form.get('firstName')?.invalid && form.get('firstName')?.touched) {
+      <p id="firstName-error" class="mt-2 text-sm text-red-600" aria-live="polite" role="alert">
         Prénom requis
       </p>
+      }
     </div>
 
     <!-- Champ Nom -->
@@ -49,15 +45,11 @@
         "
         aria-describedby="lastName-error"
       />
-      <p
-        id="lastName-error"
-        class="mt-2 text-sm text-red-600"
-        *ngIf="form.get('lastName')?.invalid && form.get('lastName')?.touched"
-        aria-live="polite"
-        role="alert"
-      >
+      @if (form.get('lastName')?.invalid && form.get('lastName')?.touched) {
+      <p id="lastName-error" class="mt-2 text-sm text-red-600" aria-live="polite" role="alert">
         Nom requis
       </p>
+      }
     </div>
     <app-phone-field formControlName="phone"></app-phone-field>
 
@@ -79,10 +71,10 @@
   <div class="mt-6">
     <h2 class="text-lg font-semibold mb-2">Entrez le code OTP : (1 2 3 4 5 6)</h2>
     <app-otp-input (complete)="onOtpComplete($event)"></app-otp-input>
+    @if (showOtp && remaining > 0) {
+    <p class="text-sm text-gray-600">Renvoyer OTP dans {{ remaining }} secondes</p>
+    }
 
-    <p *ngIf="showOtp && remaining > 0" class="text-sm text-gray-600">
-      Renvoyer OTP dans {{ remaining }} secondes
-    </p>
     <!-- Bouton pour renvoyer OTP -->
     <button
       class="mt-5 px-4 py-2 bg-gray-300 text-gray-700 rounded disabled:opacity-50"

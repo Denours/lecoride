@@ -17,15 +17,17 @@ import { Logo } from '../../logo/logo';
       <h1 class="text-2xl font-bold">Réserver un trajet</h1>
       <app-address-form (requestRide)="openModal()"></app-address-form>
       <app-estimate-panel (requestRide)="openModal()"></app-estimate-panel>
+      @if (showModal) {
       <app-ride-request-modal
-        *ngIf="showModal"
         [pickupLabel]="pickup?.label || null"
         [dropoffLabel]="dropoff?.label || null"
         [distanceKm]="distance"
         [durationMin]="duration"
         (toClose)="closeModal()"
         (toConfirm)="handleConfirm($event)"
-      ></app-ride-request-modal>
+      />
+      }
+
       <app-ride-map [pickup]="pickup" [dropoff]="dropoff"></app-ride-map>
     </section>
   `,

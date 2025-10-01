@@ -2,19 +2,17 @@
   <h1 class="text-xl font-bold mb-4">Vérification OTP</h1>
 
   <ng-container *ngIf="store.state$ | async as state">
-    <p *ngIf="state.error" class="text-red-500 mb-2">
+    @if (state.error) {
+    <p class="text-red-500 mb-2">
       {{ state.error }}
     </p>
+    }
 
     <app-otp-input (complete)="verifyOtp($event)"></app-otp-input>
+    @if (state.loading) {
+    <div class="mt-2">Vérification en cours...</div>
 
-    <div *ngIf="state.loading" class="mt-2">Vérification en cours...</div>
-
-    <button
-      *ngIf="state.lockUntil && now < state.lockUntil"
-      class="mt-4 p-3 bg-gray-300 rounded cursor-not-allowed"
-    >
-      Réessayer plus tard
-    </button>
+    } @if (state.lockUntil && now < state.lockUntil) {
+    <button class="mt-4 p-3 bg-gray-300 rounded cursor-not-allowed">Réessayer plus tard</button>}
   </ng-container>
 </main>
