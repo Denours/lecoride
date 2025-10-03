@@ -1,23 +1,24 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { TestBed } from '@angular/core/testing';
+import { provideRouter, withRouterConfig } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { SignupSuccess } from './signup-success';
 
 describe('SignupSuccess', () => {
-  let component: SignupSuccess;
-  let fixture: ComponentFixture<SignupSuccess>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [SignupSuccess]
-    })
-    .compileComponents();
-
-    fixture = TestBed.createComponent(SignupSuccess);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [SignupSuccess],
+      providers: [
+        provideHttpClient(), // fournit HttpClient
+        provideHttpClientTesting(), // fournit le backend de test pour HttpClient
+        provideRouter([], withRouterConfig({ onSameUrlNavigation: 'reload' })),
+      ],
+    });
   });
 
   it('should create', () => {
+    const fixture = TestBed.createComponent(SignupSuccess);
+    const component = fixture.componentInstance;
     expect(component).toBeTruthy();
   });
 });

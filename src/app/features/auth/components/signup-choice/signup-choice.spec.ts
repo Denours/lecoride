@@ -1,23 +1,20 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { TestBed } from '@angular/core/testing';
+import { provideRouter, withRouterConfig } from '@angular/router';
 import { SignupChoice } from './signup-choice';
 
 describe('SignupChoice', () => {
-  let component: SignupChoice;
-  let fixture: ComponentFixture<SignupChoice>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [SignupChoice]
-    })
-    .compileComponents();
-
-    fixture = TestBed.createComponent(SignupChoice);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [SignupChoice],
+      providers: [
+        provideRouter([], withRouterConfig({ onSameUrlNavigation: 'reload' }))
+      ]
+    });
   });
 
   it('should create', () => {
+    const fixture = TestBed.createComponent(SignupChoice);
+    const component = fixture.componentInstance;
     expect(component).toBeTruthy();
   });
 });

@@ -6,6 +6,7 @@ import { RideSearchStore } from '../store/ride-search.store';
 import { CommonModule } from '@angular/common';
 import { RideRequestModal } from '../components/ride-request-modal/ride-request-modal';
 import { Logo } from '../../logo/logo';
+import { GlobalRideData } from '../models/global-ride-data.type';
 
 @Component({
   selector: 'app-ride-search-page',
@@ -72,8 +73,8 @@ export class RideSearchPage {
   closeModal() {
     this.showModal = false;
   }
-  handleConfirm(data: any) {
-    console.log('✅ Course confirmée :', data);
+  handleConfirm(data: GlobalRideData) {
+    console.log('Course confirmée :', data);
     // 👉 Ici tu pourras plus tard déclencher un appel API
     this.closeModal();
   }

@@ -8,9 +8,8 @@ describe('RideRequestModal', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RideRequestModal]
-    })
-    .compileComponents();
+      imports: [RideRequestModal],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(RideRequestModal);
     component = fixture.componentInstance;

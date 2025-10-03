@@ -37,7 +37,7 @@ export class PhoneField implements ControlValueAccessor, OnDestroy {
     if (!v) return null; // required géré séparément
     try {
       const pn = parsePhoneNumberFromString(v);
-      return pn && pn.isValid() ? null : { e164: true };
+      return pn?.isValid() ? null : { e164: true };
     } catch {
       return { e164: true };
     }
@@ -76,9 +76,19 @@ export class PhoneField implements ControlValueAccessor, OnDestroy {
   }
 
   setDisabledState(isDisabled: boolean): void {
-    isDisabled
-      ? this.control.disable({ emitEvent: false })
-      : this.control.enable({ emitEvent: false });
+    if (isDisabled) {
+      this.disable();
+    } else {
+      this.enable();
+    }
+  }
+
+  disable(): void {
+    this.control.disable({ emitEvent: false });
+  }
+
+  enable(): void {
+    this.control.enable({ emitEvent: false });
   }
 
   // Helper public : retourne la valeur normalisée E.164 ou null si invalide
@@ -86,7 +96,7 @@ export class PhoneField implements ControlValueAccessor, OnDestroy {
     const raw = this.control.value ?? '';
     try {
       const pn = parsePhoneNumberFromString(raw);
-      return pn && pn.isValid() ? pn.number : null;
+      return pn?.isValid() ? pn.number : null;
     } catch {
       return null;
     }

@@ -5,7 +5,7 @@ export const routes: Routes = [
   {
     path: 'signup',
     loadComponent: () =>
-      import('./features/auth/components/signup-choice/signup-choice').then((c) => c.SignupChoice),
+      import('./features/auth/components/signup-email/signup-email').then((c) => c.SignupEmail),
   },
   // Parcours téléphone + OTP
   {
@@ -21,11 +21,11 @@ export const routes: Routes = [
       ),
   },
   // Parcours email + mot de passe
-  {
-    path: 'signup/email',
-    loadComponent: () =>
-      import('./features/auth/components/signup-email/signup-email').then((c) => c.SignupEmail),
-  },
+  // {
+  //   path: 'signup/email',
+  //   loadComponent: () =>
+  //     import('./features/auth/components/signup-email/signup-email').then((c) => c.SignupEmail),
+  // },
   {
     path: 'signup/email/check-inbox',
     loadComponent: () =>
@@ -51,6 +51,6 @@ export const routes: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('./features/auth/components/signup-choice/signup-choice').then((c) => c.SignupChoice),
+      import('./features/auth/components/signup-email/signup-email').then((c) => c.SignupEmail),
   },
 ];

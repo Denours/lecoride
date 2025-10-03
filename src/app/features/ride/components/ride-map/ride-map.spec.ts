@@ -8,9 +8,8 @@ describe('RideMap', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RideMap]
-    })
-    .compileComponents();
+      imports: [RideMap],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(RideMap);
     component = fixture.componentInstance;

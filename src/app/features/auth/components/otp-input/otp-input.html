@@ -1,4 +1,5 @@
-<div role="group" aria-label="OTP code" class="flex gap-2 justify-center">
+<fieldset class="flex gap-2 justify-center">
+  <legend class="sr-only">OTP code</legend>
   @for (i of inputs; track $index) {
   <input
     #otp
@@ -11,4 +12,4 @@
     (paste)="onPaste($event)"
   />
   }
-</div>
+</fieldset>

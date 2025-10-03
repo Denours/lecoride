@@ -86,7 +86,6 @@ export class SignupPhone implements OnDestroy {
     // Simulation envoi OTP
     alert(`Code OTP envoyé à ${firstName} ${lastName} sur le numéro : ${phoneE164}`);
 
-
     this.store.setPhone(phoneE164);
     this.showOtp = true; // on affiche le champ OTP
     // Lancer un timer de 30s
@@ -140,10 +139,13 @@ export class SignupPhone implements OnDestroy {
   /** Timer pour activer le bouton "Réessayer OTP" */
   startResendTimer() {
     this.resendEnabled = false;
-    this.timer.start(30); // par ex. 10 secondes avant de pouvoir renvoyer
-    // const sub = this.timer.remaining$.subscribe((sec) => {
-    //   if (sec <= 0) this.resendEnabled = true;
-    // });
+    this.timer.start(30); // par ex. 30 secondes avant de pouvoir renvoyer
+    const sub = this.timer.remaining$.subscribe((sec) => {
+      if (sec <= 0) {
+        this.resendEnabled = true;
+        sub.unsubscribe();
+      }
+    });
   }
   getBlockedSeconds(): number {
     if (!this.blockedUntil) return 0;

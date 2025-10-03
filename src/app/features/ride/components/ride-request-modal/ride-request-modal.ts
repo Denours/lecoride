@@ -1,12 +1,13 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule, NgFor } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RideDetails } from '../../models/ride-details.type';
+import { VehicleOptions } from '../../models/vehicle-options.type';
 
 @Component({
   selector: 'app-ride-request-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgFor],
+  imports: [CommonModule, FormsModule],
   template: `
     <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <!-- WRAPPER scrollable -->
@@ -29,20 +30,18 @@ import { RideDetails } from '../../models/ride-details.type';
         </div>
 
         <!-- Choix du véhicule -->
-        <div>
-          <p class="font-semibold mb-2">Moyen de transport</p>
-          <div class="grid grid-cols-2 gap-3">
-            <button
-              *ngFor="let option of vehicleOptions"
-              (click)="selectVehicle(option)"
-              [class.border-blue-500]="selectedVehicle === option.type"
-              class="border rounded-xl p-3 flex flex-col items-center hover:border-blue-400"
-            >
-              <span class="text-2xl">{{ option.icon }}</span>
-              <span>{{ option.label }}</span>
-              <span class="text-sm text-gray-600">{{ option.price }} FCFA * coef</span>
-            </button>
-          </div>
+        <div class="grid grid-cols-2 gap-3">
+          @for (option of vehicleOptions; track option.type) {
+          <button
+            (click)="selectVehicle(option)"
+            [class.border-blue-500]="selectedVehicle === option.type"
+            class="border rounded-xl p-3 flex flex-col items-center hover:border-blue-400"
+          >
+            <span class="text-2xl">{{ option.icon }}</span>
+            <span>{{ option.label }}</span>
+            <span class="text-sm text-gray-600">{{ option.price }} FCFA * coef</span>
+          </button>
+          }
         </div>
 
         <!-- Préférences -->
@@ -123,7 +122,7 @@ export class RideRequestModal {
   scheduledTime: string | null = null;
 
   // Méthodes
-  selectVehicle(option: any) {
+  selectVehicle(option: VehicleOptions) {
     this.selectedVehicle = option.type;
   }
 
