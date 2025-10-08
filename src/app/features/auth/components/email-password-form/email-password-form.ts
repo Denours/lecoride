@@ -71,7 +71,7 @@ export class EmailPasswordForm implements OnDestroy {
     this.sub = this.timer.remaining$.subscribe((val) => {
       this.remaining = val;
 
-      // 🔄 Renvoi automatique si timer atteint 0
+      // Renvoi automatique si timer atteint 0
       if (this.showOtp && val === 0) {
         this.resendOtp();
       }
