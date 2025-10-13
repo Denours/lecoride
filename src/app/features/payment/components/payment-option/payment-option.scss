@@ -1,0 +1,7 @@
+ .option-card {
+      display: flex; align-items: center;
+      gap: 1rem; border: 2px solid #ccc;
+      border-radius: 12px; padding: 1rem;
+      cursor: pointer; transition: 0.2s;
+    }
+    .option-card.selected { border-color: #16a34a; background: #f0fdf4; }

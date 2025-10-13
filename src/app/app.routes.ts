@@ -49,6 +49,13 @@ export const routes: Routes = [
       import('./features/ride/ride-search-page/ride-search-page').then((c) => c.RideSearchPage),
   },
   {
+    path: 'checkout',
+    loadComponent: () =>
+      import('./features/payment/components/payment-checkout/payment-checkout').then(
+        (c) => c.PaymentCheckout
+      ),
+  },
+  {
     path: '',
     loadComponent: () =>
       import('./features/auth/components/signup-email/signup-email').then((c) => c.SignupEmail),
