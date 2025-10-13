@@ -7,11 +7,20 @@ import { CommonModule } from '@angular/common';
 import { RideRequestModal } from '../components/ride-request-modal/ride-request-modal';
 import { Logo } from '../../logo/logo';
 import { GlobalRideData } from '../models/global-ride-data.type';
+import { PaymentModal } from '../../payment/components/payment-modal/payment-modal';
 
 @Component({
   selector: 'app-ride-search-page',
   standalone: true,
-  imports: [CommonModule, AddressForm, RideMap, EstimatePanel, RideRequestModal, Logo],
+  imports: [
+    CommonModule,
+    AddressForm,
+    RideMap,
+    EstimatePanel,
+    RideRequestModal,
+    Logo,
+    PaymentModal,
+  ],
   template: `
     <app-logo />
     <section class="p-6 max-w-4xl mx-auto flex flex-col gap-6">
@@ -27,6 +36,8 @@ import { GlobalRideData } from '../models/global-ride-data.type';
         (toClose)="closeModal()"
         (toConfirm)="handleConfirm($event)"
       />
+      } @if (showPaymentModal) {
+      <app-payment-modal (toClose)="closePaymentModal()" (paymentDone)="closePaymentModal()" />
       }
 
       <app-ride-map [pickup]="pickup" [dropoff]="dropoff"></app-ride-map>
@@ -51,6 +62,7 @@ app-ride-request-modal {
 export class RideSearchPage {
   private readonly store = inject(RideSearchStore);
   showModal = false;
+  showPaymentModal = false;
 
   get pickup() {
     return this.store.pickup();
@@ -77,5 +89,11 @@ export class RideSearchPage {
     console.log('Course confirmée :', data);
     // 👉 Ici tu pourras plus tard déclencher un appel API
     this.closeModal();
+    // 👉 Ouvre directement le modal de paiement après la confirmation
+    this.showPaymentModal = true;
+  }
+
+  closePaymentModal() {
+    this.showPaymentModal = false;
   }
 }

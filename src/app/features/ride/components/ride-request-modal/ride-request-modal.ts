@@ -3,12 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RideDetails } from '../../models/ride-details.type';
 import { VehicleOptions } from '../../models/vehicle-options.type';
-import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-ride-request-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule],
   template: `
     <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <!-- WRAPPER scrollable -->
@@ -86,7 +85,6 @@ import { RouterLink } from '@angular/router';
 
         <!-- Validation -->
         <button
-          routerLink="/checkout"
           (click)="confirmRide()"
           [disabled]="!canConfirm()"
           class="bg-blue-600 text-white rounded-xl py-2 px-4 font-semibold hover:bg-blue-700 disabled:bg-gray-300"
