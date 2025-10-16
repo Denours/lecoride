@@ -7,10 +7,10 @@ import { PaymentMetaData } from '../models/payment-metadata.type';
 @Injectable({ providedIn: 'root' })
 export class PaymentService {
   // Simule un init d'un paiement.
-  // payload contient { method, amount, metadata }
+  // payload contient { method, price, metadata }
   initiate(
     method: PaymentMethodId,
-    amount: number,
+    price: number,
     metadata?: PaymentMetaData
   ): Observable<{
     status: 'pending' | 'success' | 'failed';

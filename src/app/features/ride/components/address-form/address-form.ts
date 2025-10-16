@@ -113,4 +113,5 @@ export class AddressForm {
   openRideRequestModal() {
     this.requestRide.emit();
   }
+
 }

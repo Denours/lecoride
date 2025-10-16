@@ -3,7 +3,7 @@ export interface PaymentMetaData {
   userId: string; // identifiant de l'utilisateur ayant effectué le paiement
   tripId: string; // identifiant du trajet réservé
 
-  amount: number; // montant total du paiement
+  price: number; // montant total du paiement
   currency: string; // ex: 'XAF', 'USD', 'EUR'
 
   method: 'MOMO' | 'OM' | 'CARD' | 'PAYPAL'; // méthode de paiement (MTN, Orange, Carte, etc.)

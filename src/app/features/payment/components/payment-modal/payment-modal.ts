@@ -1,8 +1,10 @@
-import { Component, EventEmitter, Output, signal } from '@angular/core';
+import { Component, EventEmitter, Input, Output, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PaymentService } from '../../services/payment';
 import { PaymentOptionInt } from '../../models/payment.type';
+import { RideSearchStore } from '../../../ride/store/ride-search.store';
 import { take } from 'rxjs/operators';
+import { RideHistoryItem } from '../../../ride/ride-history-page/ride-history-page';
 
 @Component({
   selector: 'app-payment-modal',
@@ -20,9 +22,11 @@ import { take } from 'rxjs/operators';
         <!-- RÉSUMÉ -->
         <div class="bg-gray-100 rounded-lg p-3">
           <p class="font-semibold mb-1">Résumé du trajet</p>
-          <p>📍 De : {{ summary().pickup }}</p>
-          <p>🏁 À : {{ summary().dropoff }}</p>
-          <p class="text-sm text-gray-600 mt-1">💰 Montant : {{ amount() }} FCFA</p>
+          <p>📍 De : {{ pickupLabel() || 'Non défini' }}</p>
+          <p>🏁 À : {{ dropoffLabel() || 'Non défini' }}</p>
+          <p class="text-sm text-gray-600 mt-1">
+            💰 Montant : {{ price() ? price() + ' FCFA' : 'Non estimé' }}
+          </p>
         </div>
 
         <!-- OPTIONS DE PAIEMENT -->
@@ -41,7 +45,8 @@ import { take } from 'rxjs/operators';
 
         <!-- MESSAGE ÉTAT -->
         @if (message()) {
-        <p class="text-center font-medium"
+        <p
+          class="text-center font-medium"
           [ngClass]="{
             'text-blue-600': stage() === 'pending' || stage() === 'initiated',
             'text-green-600': stage() === 'success',
@@ -82,8 +87,14 @@ import { take } from 'rxjs/operators';
   `,
 })
 export class PaymentModal {
+  @Input() ride: RideHistoryItem | null = null;
+  @Output() toSuccess = new EventEmitter<void>();
+
   @Output() toClose = new EventEmitter<void>();
   @Output() paymentDone = new EventEmitter<void>();
+
+  private readonly store = inject(RideSearchStore);
+  private readonly svc = inject(PaymentService);
 
   options: PaymentOptionInt[] = [
     { id: 'cash', label: 'Cash', icon: '💵', description: 'Paiement en espèces' },
@@ -92,14 +103,19 @@ export class PaymentModal {
   ];
 
   selected = signal<PaymentOptionInt | null>(null);
-  amount = signal<number>(1200);
-  summary = signal({ pickup: 'Point A', dropoff: 'Point B' });
+
+  // ⚙️ Données dynamiques venant du store
+  pickupLabel = computed(() => this.ride?.pickup ?? '');
+  dropoffLabel = computed(() => this.ride?.dropoff ?? '');
+  price = computed(() => {
+    // Exemple : 400 FCFA par km (ajuste selon ta logique)
+    const distance = this.store.distance();
+    return distance ? Math.round(distance * 400) : null;
+  });
 
   stage = signal<'idle' | 'initiated' | 'pending' | 'success' | 'failed'>('idle');
   message = signal<string | null>(null);
   private paymentId: string | null = null;
-
-  constructor(private readonly svc: PaymentService) {}
 
   select(opt: PaymentOptionInt) {
     this.selected.set(opt);
@@ -113,7 +129,8 @@ export class PaymentModal {
     this.stage.set('initiated');
     this.message.set('Initialisation du paiement…');
 
-    this.svc.initiate(chosen.id, this.amount())
+    this.svc
+      .initiate(chosen.id, this.price() ?? 0)
       .pipe(take(1))
       .subscribe({
         next: (res) => {
@@ -122,11 +139,10 @@ export class PaymentModal {
           if (res.status === 'pending') {
             this.stage.set('pending');
             this.message.set('Paiement en cours…');
-            this.svc.pollStatus(this.paymentId ?? '')
+            this.svc
+              .pollStatus(this.paymentId ?? '')
               .pipe(take(1))
-              .subscribe((s) => {
-                s.status === 'success' ? this.onSuccess() : this.onFailure();
-              });
+              .subscribe((s) => (s.status === 'success' ? this.onSuccess() : this.onFailure()));
             return;
           }
 
@@ -134,11 +150,10 @@ export class PaymentModal {
             this.message.set('Redirection vers la page de paiement...');
             window.open(res.redirectUrl, '_blank');
             this.stage.set('pending');
-            this.svc.pollStatus(this.paymentId ?? '')
+            this.svc
+              .pollStatus(this.paymentId ?? '')
               .pipe(take(1))
-              .subscribe((s) => {
-                s.status === 'success' ? this.onSuccess() : this.onFailure();
-              });
+              .subscribe((s) => (s.status === 'success' ? this.onSuccess() : this.onFailure()));
             return;
           }
 
@@ -159,9 +174,9 @@ export class PaymentModal {
   }
 
   downloadReceipt() {
-    const content = `Reçu LeCoRide\nMode: ${
-      this.selected()?.label
-    }\nMontant: ${this.amount()} FCFA\nTrajet: ${this.summary().pickup} → ${this.summary().dropoff}\n`;
+    const content = `Reçu LeCoRide\nMode: ${this.selected()?.label}\nMontant: ${
+      this.price() ?? 'N/A'
+    } FCFA\nTrajet: ${this.pickupLabel()} → ${this.dropoffLabel()}\n`;
     const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -173,6 +188,12 @@ export class PaymentModal {
 
   finishPayment() {
     this.paymentDone.emit();
+    this.toClose.emit();
+  }
+
+  processPayment() {
+    // après confirmation du mode choisi
+    this.toSuccess.emit();
     this.toClose.emit();
   }
 }

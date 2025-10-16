@@ -49,6 +49,11 @@ export const routes: Routes = [
       import('./features/ride/ride-search-page/ride-search-page').then((c) => c.RideSearchPage),
   },
   {
+    path: 'ride/history',
+    loadComponent: () =>
+      import('./features/ride/ride-history-page/ride-history-page').then((c) => c.RideHistoryPage),
+  },
+  {
     path: '',
     loadComponent: () =>
       import('./features/auth/components/signup-email/signup-email').then((c) => c.SignupEmail),
