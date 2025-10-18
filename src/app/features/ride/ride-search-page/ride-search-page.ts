@@ -27,7 +27,11 @@ import { Ride } from '../models/ride.type';
 
       <!-- 🧾 Formulaire et estimation -->
       <app-address-form (requestRide)="openModal()" />
-      <app-estimate-panel (requestRide)="openModal()" />
+      <app-estimate-panel
+        (requestRide)="openModal()"
+        (distanceChange)="distanceKm = $event"
+        (priceChange)="prixEstime = $event"
+      />
 
       <!-- 🪟 Modal de demande de course -->
       @if (showModal()) {
@@ -35,7 +39,6 @@ import { Ride } from '../models/ride.type';
         [pickupLabel]="pickup()?.label ?? null"
         [dropoffLabel]="dropoff()?.label ?? null"
         [distanceKm]="distance()"
-        [durationMin]="duration()"
         (toClose)="closeModal()"
         (toConfirm)="handleConfirm($event)"
       />
@@ -70,7 +73,8 @@ export class RideSearchPage {
   pickup = this.store.pickup;
   dropoff = this.store.dropoff;
   distance = this.store.distance;
-  duration = this.store.duration;
+  distanceKm = 0;
+  prixEstime = 0;
 
   // Gestion du modal
   openModal() {

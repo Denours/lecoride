@@ -7,7 +7,7 @@ export interface Ride {
   baggage: boolean;
   ac: boolean;
   when: string; // date ou 'now'
-  distance?: number;
+  distance?: number | null;
   price?: number;
   isPaid?: boolean;
 }

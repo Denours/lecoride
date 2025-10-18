@@ -1,4 +1,4 @@
-import { Component, inject, signal, effect } from '@angular/core';
+import { Component, inject, signal, effect, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RideSearchStore, RidePoint } from '../../store/ride-search.store';
 
@@ -16,6 +16,8 @@ export class EstimatePanel {
   dropoff = signal<RidePoint | null>(null);
   estimatedPrice = signal(0);
   distanceKm = signal(0);
+  @Output() distanceChange = new EventEmitter<number>();
+  @Output() priceChange = new EventEmitter<number>();
 
   constructor() {
     // Synchronisation avec le store
@@ -51,6 +53,8 @@ export class EstimatePanel {
 
     const prix = Math.round(distance * tarifParKm + fraisFixe);
     this.estimatedPrice.set(prix);
+    this.distanceChange.emit(distance);
+    this.priceChange.emit(prix);
   }
 
   private getDistanceFromLatLonInKm(lat1: number, lon1: number, lat2: number, lon2: number) {

@@ -36,7 +36,8 @@ import { Ride } from '../models/ride.type';
               {{ ride.pickup }} → {{ ride.dropoff }}
             </h2>
             <p class="text-gray-600 text-sm">
-              {{ ride.when }} • {{ ride.price | number : '1.0-0' }} FCFA
+              {{ ride.when }} 
+              <!-- • {{ ride.price | number : '1.0-0' }} FCFA -->
             </p>
           </div>
 

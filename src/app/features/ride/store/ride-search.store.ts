@@ -13,26 +13,25 @@ export interface RidePoint {
 export class RideSearchStore {
   readonly pickup = signal<RidePoint | null>(null);
   readonly dropoff = signal<RidePoint | null>(null);
-  distance = signal<number | null>(null);
-  duration = signal<number | null>(null);
+  distance = signal<number | null>(null); //  distance en km
+  duration = signal<number | null>(null); //  durée en minutes
 
-  // Liste des trajets réservés
+  // Nouveau : liste des trajets réservés
   readonly rides = signal<Ride[]>([]);
-
-  setPickup(p: RidePoint | null): void {
+  setPickup(p: RidePoint | null) {
     this.pickup.set(p);
   }
 
-  setDropoff(d: RidePoint | null): void {
+  setDropoff(d: RidePoint | null) {
     this.dropoff.set(d);
   }
 
   // Ajoute un trajet dans l’historique
   addRide(ride: Ride): void {
-    const id = Date.now().toString(); // Génère un ID unique local
-    this.rides.update((oldRides) => [...oldRides, { ...ride, id }]);
+    this.rides.update((oldRides) => [...oldRides, ride]);
   }
 
+  // (Optionnel) vider l’historique
   clearRides(): void {
     this.rides.set([]);
   }
