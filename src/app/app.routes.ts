@@ -20,12 +20,6 @@ export const routes: Routes = [
         (c) => c.SignupPhoneVerify
       ),
   },
-  // Parcours email + mot de passe
-  // {
-  //   path: 'signup/email',
-  //   loadComponent: () =>
-  //     import('./features/auth/components/signup-email/signup-email').then((c) => c.SignupEmail),
-  // },
   {
     path: 'signup/email/check-inbox',
     loadComponent: () =>
@@ -41,8 +35,6 @@ export const routes: Routes = [
         (c) => c.SignupSuccess
       ),
   },
-  // { path: '', redirectTo: '/home', pathMatch: 'full' },
-  // Choix du type d'inscription (téléphone ou email) à la landing-page
   {
     path: 'ride/search',
     loadComponent: () =>
@@ -55,6 +47,7 @@ export const routes: Routes = [
   },
   {
     path: '',
+    pathMatch: 'full',
     loadComponent: () =>
       import('./features/auth/components/signup-email/signup-email').then((c) => c.SignupEmail),
   },

@@ -1,3 +1,4 @@
+import { of } from 'rxjs';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RideHistoryPage } from './ride-history-page';
 import { RideSearchStore } from '../store/ride-search.store';
@@ -26,6 +27,7 @@ describe('RideHistoryPage', () => {
             navigate: jasmine.createSpy('navigate'),
             createUrlTree: jasmine.createSpy('createUrlTree').and.returnValue({}),
             serializeUrl: jasmine.createSpy('serializeUrl').and.returnValue('/stub-url'),
+            events: of(), // <-- Important ! simule un Observable vide
           },
         },
         { provide: ActivatedRoute, useValue: {} },

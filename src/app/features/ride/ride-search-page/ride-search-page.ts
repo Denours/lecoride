@@ -6,8 +6,8 @@ import { EstimatePanel } from '../components/estimate-panel/estimate-panel';
 import { RideRequestModal } from '../components/ride-request-modal/ride-request-modal';
 import { Logo } from '../../logo/logo';
 import { RideSearchStore } from '../store/ride-search.store';
-import { GlobalRideData } from '../models/global-ride-data.type';
 import { RouterLink } from '@angular/router';
+import { Ride } from '../models/ride.type';
 
 @Component({
   selector: 'app-ride-search-page',
@@ -15,14 +15,15 @@ import { RouterLink } from '@angular/router';
   imports: [CommonModule, AddressForm, RideMap, EstimatePanel, RideRequestModal, Logo, RouterLink],
   template: `
     <app-logo />
-
     <section class="p-6 max-w-4xl mx-auto flex flex-col gap-6">
       <h1 class="text-2xl font-bold">Réserver un trajet</h1>
-
       <!-- 🧭 Lien vers l’historique -->
-      <a routerLink="/ride/history" class="text-blue-600 underline hover:text-blue-800 transition">
+      <button
+        routerLink="/ride/history"
+        class=" hover:text-blue-800 transition text-lg text-slate-800 border border-1 border-green-400 bg-green-200 w-52 d-block mx-auto rounded-lg p-0.5"
+      >
         Historique de mes trajets
-      </a>
+      </button>
 
       <!-- 🧾 Formulaire et estimation -->
       <app-address-form (requestRide)="openModal()" />
@@ -80,13 +81,26 @@ export class RideSearchPage {
     this.showModal.set(false);
   }
 
-  handleConfirm(data: GlobalRideData) {
-    console.log('✅ Course confirmée :', data);
+  handleConfirm(data: Ride) {
+    const ride = {
+      pickup: data.pickup,
+      dropoff: data.dropoff,
+      vehicle: data.vehicle,
+      passengers: data.passengers,
+      baggage: data.baggage,
+      ac: data.ac,
+      when: data.when,
+      distance: this.distance() ?? 0,
+      price: data.price ?? 0,
+      isPaid: false,
+    };
 
-    // ⛔ Ne pas ouvrir le modal de paiement ici
-    // Ce sera géré dans la page "ride-history" lors du clic sur "Payer"
+    // ✅ Ajoute le trajet dans le store
+    this.store.addRide(ride);
 
-    // Ferme juste le modal de demande de course
+    console.log('✅ Nouveau trajet ajouté à l’historique :', ride);
+
+    // Ferme le modal
     this.closeModal();
   }
 }

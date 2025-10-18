@@ -1,8 +1,8 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RideDetails } from '../../models/ride-details.type';
 import { VehicleOptions } from '../../models/vehicle-options.type';
+import { Ride } from '../../models/ride.type';
 
 @Component({
   selector: 'app-ride-request-modal',
@@ -102,7 +102,7 @@ export class RideRequestModal {
   @Input() durationMin: number | null = null;
 
   @Output() toClose = new EventEmitter<void>();
-  @Output() toConfirm = new EventEmitter<RideDetails>();
+  @Output() toConfirm = new EventEmitter<Ride>();
 
   // Données internes
   vehicleOptions = [

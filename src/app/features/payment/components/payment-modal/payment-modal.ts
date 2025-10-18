@@ -4,7 +4,7 @@ import { PaymentService } from '../../services/payment';
 import { PaymentOptionInt } from '../../models/payment.type';
 import { RideSearchStore } from '../../../ride/store/ride-search.store';
 import { take } from 'rxjs/operators';
-import { RideHistoryItem } from '../../../ride/ride-history-page/ride-history-page';
+import { Ride } from '../../../ride/models/ride.type';
 
 @Component({
   selector: 'app-payment-modal',
@@ -87,7 +87,7 @@ import { RideHistoryItem } from '../../../ride/ride-history-page/ride-history-pa
   `,
 })
 export class PaymentModal {
-  @Input() ride: RideHistoryItem | null = null;
+  @Input() ride: Ride | null = null;
   @Output() toSuccess = new EventEmitter<void>();
 
   @Output() toClose = new EventEmitter<void>();
