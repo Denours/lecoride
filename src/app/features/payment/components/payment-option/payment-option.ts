@@ -10,9 +10,9 @@ import { CommonModule } from '@angular/common';
 export class PaymentOption {
   @Input() option!: PaymentOptionInt;
   @Input() selected = false;
-  @Output() select = new EventEmitter<PaymentOptionInt>();
+  @Output() selection = new EventEmitter<PaymentOptionInt>();
 
   onClick() {
-    this.select.emit(this.option);
+    this.selection.emit(this.option);
   }
 }

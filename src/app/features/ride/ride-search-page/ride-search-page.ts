@@ -86,7 +86,12 @@ export class RideSearchPage {
   }
 
   handleConfirm(data: Ride) {
+    // récupérer distance & prix à partir du store/estimate service
+    const distance = this.store.distance();
+    const price = distance !== null ? Math.round(distance * 400) : undefined;
+
     const ride = {
+      id: Date.now().toString(),
       pickup: data.pickup,
       dropoff: data.dropoff,
       vehicle: data.vehicle,
@@ -94,8 +99,8 @@ export class RideSearchPage {
       baggage: data.baggage,
       ac: data.ac,
       when: data.when,
-      distance: this.distance() ?? 0,
-      price: data.price ?? 0,
+      distance: distance ?? null,
+      price: price,
       isPaid: false,
     };
 

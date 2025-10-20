@@ -1,10 +1,9 @@
 import { Component, EventEmitter, Input, Output, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PaymentService } from '../../services/payment';
 import { PaymentOptionInt } from '../../models/payment.type';
 import { RideSearchStore } from '../../../ride/store/ride-search.store';
-import { take } from 'rxjs/operators';
 import { Ride } from '../../../ride/models/ride.type';
+import { PaymentService } from '../../services/payment';
 
 @Component({
   selector: 'app-payment-modal',
@@ -24,26 +23,25 @@ import { Ride } from '../../../ride/models/ride.type';
           <p class="font-semibold mb-1">Résumé du trajet</p>
           <p>📍 De : {{ pickupLabel() || 'Non défini' }}</p>
           <p>🏁 À : {{ dropoffLabel() || 'Non défini' }}</p>
-          <p class="text-sm text-gray-600 mt-1">
-            💰 Montant : {{ price() ? price() + ' FCFA' : 'Non estimé' }}
-          </p>
         </div>
 
-        <!-- OPTIONS DE PAIEMENT -->
+        <!-- OPTIONS -->
         <div class="grid grid-cols-3 gap-3">
           @for (opt of options; track opt.id) {
           <button
             (click)="select(opt)"
             [class.border-blue-500]="selected()?.id === opt.id"
             class="border rounded-xl p-3 flex flex-col items-center hover:border-blue-400"
+            role="option"
+            [attr.aria-selected]="selected()?.id === opt.id"
           >
-            <span class="text-3xl">{{ opt.icon }}</span>
+            <span class="text-3xl" aria-hidden="true">{{ opt.icon }}</span>
             <span class="text-sm font-semibold mt-1">{{ opt.label }}</span>
           </button>
           }
         </div>
 
-        <!-- MESSAGE ÉTAT -->
+        <!-- MESSAGE -->
         @if (message()) {
         <p
           class="text-center font-medium"
@@ -74,7 +72,7 @@ import { Ride } from '../../../ride/models/ride.type';
           </button>
           } @else {
           <button
-            (click)="startPayment()"
+            (click)="simulatePayment()"
             class="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
             [disabled]="!selected() || stage() === 'pending'"
           >
@@ -87,85 +85,67 @@ import { Ride } from '../../../ride/models/ride.type';
   `,
 })
 export class PaymentModal {
-  @Input() ride: Ride | null = null;
-  @Output() toSuccess = new EventEmitter<void>();
+  private readonly paymentService = inject(PaymentService);
 
+  @Input() ride: Ride | null = null;
+  @Output() paymentDone = new EventEmitter<string | null>();
   @Output() toClose = new EventEmitter<void>();
-  @Output() paymentDone = new EventEmitter<void>();
 
   private readonly store = inject(RideSearchStore);
-  private readonly svc = inject(PaymentService);
 
   options: PaymentOptionInt[] = [
     { id: 'cash', label: 'Cash', icon: '💵', description: 'Paiement en espèces' },
     { id: 'mobile_money', label: 'Mobile Money', icon: '📱', description: 'Paiement via mobile' },
-    { id: 'card', label: 'Carte', icon: '💳', description: 'Paiement via carte (Stripe)' },
+    { id: 'card', label: 'Carte', icon: '💳', description: 'Paiement via carte' },
   ];
 
   selected = signal<PaymentOptionInt | null>(null);
+  stage = signal<'idle' | 'initiated' | 'pending' | 'success' | 'failed'>('idle');
+  message = signal<string | null>(null);
 
-  // ⚙️ Données dynamiques venant du store
   pickupLabel = computed(() => this.ride?.pickup ?? '');
   dropoffLabel = computed(() => this.ride?.dropoff ?? '');
   price = computed(() => {
-    // Exemple : 400 FCFA par km (ajuste selon ta logique)
     const distance = this.store.distance();
-    return distance ? Math.round(distance * 400) : null;
+    if (this.ride?.price != null) return this.ride.price;
+    return distance ? Math.round(distance * 400) : 0;
   });
-
-  stage = signal<'idle' | 'initiated' | 'pending' | 'success' | 'failed'>('idle');
-  message = signal<string | null>(null);
-  private paymentId: string | null = null;
 
   select(opt: PaymentOptionInt) {
     this.selected.set(opt);
     this.message.set(null);
   }
 
-  startPayment() {
+  // --- Simulation locale du paiement ---
+  simulatePayment() {
     const chosen = this.selected();
     if (!chosen) return;
 
     this.stage.set('initiated');
     this.message.set('Initialisation du paiement…');
 
-    this.svc
-      .initiate(chosen.id, this.price() ?? 0)
-      .pipe(take(1))
-      .subscribe({
-        next: (res) => {
-          this.paymentId = res.paymentId ?? null;
+    const price = this.price();
 
-          if (res.status === 'pending') {
-            this.stage.set('pending');
-            this.message.set('Paiement en cours…');
-            this.svc
-              .pollStatus(this.paymentId ?? '')
-              .pipe(take(1))
-              .subscribe((s) => (s.status === 'success' ? this.onSuccess() : this.onFailure()));
-            return;
-          }
-
-          if (chosen.id === 'card' && res.redirectUrl) {
-            this.message.set('Redirection vers la page de paiement...');
-            window.open(res.redirectUrl, '_blank');
-            this.stage.set('pending');
-            this.svc
-              .pollStatus(this.paymentId ?? '')
-              .pipe(take(1))
-              .subscribe((s) => (s.status === 'success' ? this.onSuccess() : this.onFailure()));
-            return;
-          }
-
-          res.status === 'success' ? this.onSuccess() : this.onFailure();
-        },
-        error: () => this.onFailure(),
-      });
+    this.paymentService.initiate(chosen.id, price).subscribe((res) => {
+      if (res.status === 'pending' && res.redirectUrl) {
+        // Simulation d'une redirection Stripe
+        window.open(res.redirectUrl, '_blank');
+        this.stage.set('pending');
+        this.message.set('Redirection vers la page de paiement…');
+        // Attendre quelques secondes pour simuler la complétion
+        setTimeout(() => this.onSuccess(), 4000);
+      } else if (res.status === 'success') {
+        this.onSuccess();
+      } else {
+        this.onFailure();
+      }
+    });
   }
 
   private onSuccess() {
     this.stage.set('success');
     this.message.set('✅ Paiement réussi');
+    this.paymentDone.emit(this.ride?.id ?? null);
   }
 
   private onFailure() {
@@ -174,9 +154,9 @@ export class PaymentModal {
   }
 
   downloadReceipt() {
-    const content = `Reçu LeCoRide\nMode: ${this.selected()?.label}\nMontant: ${
-      this.price() ?? 'N/A'
-    } FCFA\nTrajet: ${this.pickupLabel()} → ${this.dropoffLabel()}\n`;
+    const content = `Reçu LeCoRide\nMode: ${
+      this.selected()?.label
+    }\nMontant: ${this.price()} FCFA\nTrajet: ${this.pickupLabel()} → ${this.dropoffLabel()}`;
     const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -187,13 +167,6 @@ export class PaymentModal {
   }
 
   finishPayment() {
-    this.paymentDone.emit();
-    this.toClose.emit();
-  }
-
-  processPayment() {
-    // après confirmation du mode choisi
-    this.toSuccess.emit();
     this.toClose.emit();
   }
 }
