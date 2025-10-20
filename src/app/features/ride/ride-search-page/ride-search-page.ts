@@ -8,22 +8,41 @@ import { Logo } from '../../logo/logo';
 import { RideSearchStore } from '../store/ride-search.store';
 import { RouterLink } from '@angular/router';
 import { Ride } from '../models/ride.type';
+import { SOSButton } from '../../sos-button/sos-button';
 
 @Component({
   selector: 'app-ride-search-page',
   standalone: true,
-  imports: [CommonModule, AddressForm, RideMap, EstimatePanel, RideRequestModal, Logo, RouterLink],
+  imports: [
+    CommonModule,
+    AddressForm,
+    RideMap,
+    EstimatePanel,
+    RideRequestModal,
+    Logo,
+    RouterLink,
+    SOSButton,
+  ],
   template: `
     <app-logo />
     <section class="p-6 max-w-4xl mx-auto flex flex-col gap-6">
       <h1 class="text-2xl font-bold">Réserver un trajet</h1>
       <!-- 🧭 Lien vers l’historique -->
-      <button
-        routerLink="/ride/history"
-        class=" hover:text-blue-800 transition text-lg text-slate-800 border border-1 border-green-400 bg-green-200 w-52 d-block mx-auto rounded-lg p-0.5"
-      >
-        Historique de mes trajets
-      </button>
+      <div class="flex space-x-4">
+        <button
+          routerLink="/ride/history"
+          class=" hover:text-blue-800 transition text-lg text-slate-800 border border-1 border-green-400 bg-green-200 w-52 rounded-lg p-0.5"
+        >
+          Historique de mes trajets
+        </button>
+        <button
+          routerLink="/sos"
+          class=" hover:text-blue-800 transition text-lg text-slate-800 border border-1 border-red-400 bg-red-200 w-52 rounded-lg p-0.5"
+        >
+          Historique de mes alertes
+        </button>
+      </div>
+      <app-sos-button />
 
       <!-- 🧾 Formulaire et estimation -->
       <app-address-form (requestRide)="openModal()" />

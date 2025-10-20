@@ -46,6 +46,11 @@ export const routes: Routes = [
       import('./features/ride/ride-history-page/ride-history-page').then((c) => c.RideHistoryPage),
   },
   {
+    path: 'sos',
+    loadComponent: () =>
+      import('./features/sos-page/sos-page').then((c) => c.SOSPage),
+  },
+  {
     path: '',
     pathMatch: 'full',
     loadComponent: () =>

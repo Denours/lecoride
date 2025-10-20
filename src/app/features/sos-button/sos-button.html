@@ -1,0 +1,11 @@
+<button
+  class="sos-fab"
+  routerLink="/sos"
+  (click)="sendSOS()"
+  [class.sending]="isSending()"
+  [class.success]="success()"
+  [class.error]="error()"
+  aria-label="Bouton SOS"
+>
+  🆘
+</button>

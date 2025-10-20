@@ -1,0 +1,39 @@
+.sos-fab {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: red;
+  color: white;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.sos-fab:hover {
+  transform: scale(1.1);
+}
+
+.sos-fab.sending {
+  animation: pulse 0.5s infinite;
+}
+
+.sos-fab.success {
+  background-color: green;
+  animation: none;
+}
+
+.sos-fab.error {
+  background-color: darkred;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}

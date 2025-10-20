@@ -34,6 +34,7 @@
     "@ngx-translate/http-loader": "^17.0.0",
     "@tailwindcss/postcss": "^4.1.13",
     "@zxcvbn-ts/core": "^3.0.4",
+    "idb": "^8.0.3",
     "leaflet": "^1.9.4",
     "leaflet-routing-machine": "^3.2.12",
     "libphonenumber-js": "^1.12.17",

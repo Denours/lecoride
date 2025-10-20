@@ -5,11 +5,12 @@ import { RideSearchStore } from '../store/ride-search.store';
 import { PaymentModal } from '../../payment/components/payment-modal/payment-modal';
 import { RouterLink } from '@angular/router';
 import { Ride } from '../models/ride.type';
+import { SOSButton } from '../../sos-button/sos-button';
 
 @Component({
   selector: 'app-ride-history-page',
   standalone: true,
-  imports: [CommonModule, PaymentModal, RouterLink, Logo],
+  imports: [CommonModule, PaymentModal, RouterLink, Logo, SOSButton],
   template: `
     <app-logo />
     <section class="p-6 max-w-4xl mx-auto flex flex-col gap-6">
@@ -17,9 +18,9 @@ import { Ride } from '../models/ride.type';
 
       <button
         routerLink="/ride/search"
-        class="hover:text-blue-800 transition text-slate-800 text-start border border-green-400 bg-green-200 rounded-lg w-48 p-1"
+        class="hover:text-blue-800 transition text-slate-800 text-start border border-green-400 bg-green-200 rounded-lg w-60 p-1"
       >
-        ← Retour à la réservation
+        ← Retour à l'espace réservation
       </button>
 
       @if (rides().length === 0) {
@@ -71,6 +72,7 @@ import { Ride } from '../models/ride.type';
         (paymentDone)="onPaymentDone($event)"
       />
       }
+      <app-sos-button />
     </section>
   `,
   styles: `
