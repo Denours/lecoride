@@ -128,12 +128,17 @@ export class PaymentModal {
 
     this.paymentService.initiate(chosen.id, price).subscribe((res) => {
       if (res.status === 'pending' && res.redirectUrl) {
-        // Simulation d'une redirection Stripe
+        // Simulation d'une redirection Stripe (pour carte)
         window.open(res.redirectUrl, '_blank');
         this.stage.set('pending');
         this.message.set('Redirection vers la page de paiement…');
-        // Attendre quelques secondes pour simuler la complétion
         setTimeout(() => this.onSuccess(), 4000);
+      } else if (res.status === 'pending' && !res.redirectUrl) {
+        // Simulation du traitement Mobile Money
+        this.stage.set('pending');
+        this.message.set('Paiement Mobile Money en cours...');
+        // après 3 secondes, on simule la réussite
+        setTimeout(() => this.onSuccess(), 3000);
       } else if (res.status === 'success') {
         this.onSuccess();
       } else {
