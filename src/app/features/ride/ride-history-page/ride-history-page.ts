@@ -38,6 +38,15 @@ import { SOSButton } from '../../sos-button/sos-button';
             <p class="text-gray-600 text-sm">
               {{ ride.when }}
             </p>
+            <!-- 🔥 Affichage distance et prix -->
+            @if (ride.distance && ride.price) {
+            <p class="text-gray-700 text-sm">
+              Distance : {{ ride.distance | number : '1.1-1' }} km
+            </p>
+            <p class="text-gray-800 font-medium text-sm">
+              Prix estimé : {{ ride.price| number : '1.0-0' }} F CFA
+            </p>
+            }
           </div>
 
           <div class="flex gap-3 items-center">

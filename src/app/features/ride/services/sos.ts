@@ -12,31 +12,27 @@ export class SOSService {
   private dbPromise: Promise<IDBDatabase> | null = null;
 
   constructor() {
-    // ✅ le constructeur reste synchrone
     this.registerOnlineListener();
   }
 
-  /**
-   * Initialise la base après la création du service.
-   * À appeler une seule fois (par exemple depuis AppComponent ou un composant SOS).
-   */
+  /** Initialise la base IndexedDB */
   async init(): Promise<void> {
     if (!this.dbPromise) {
       this.dbPromise = this.openDB();
-      await this.dbPromise; // on attend l’ouverture
+      await this.dbPromise;
     }
   }
 
-  /** Écoute l'événement de retour en ligne */
+  /** Écoute le retour réseau */
   private registerOnlineListener(): void {
-    window.addEventListener('online', () =>
+    globalThis.addEventListener('online', () =>
       this.retryPendingAlerts().catch((err) => console.error('Retry failed', err))
     );
   }
 
-  /** Ouverture ou création de la base IndexedDB */
+  /** Ouverture/création de la DB */
   private openDB(): Promise<IDBDatabase> {
-    return new Promise<IDBDatabase>((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       const req = indexedDB.open(this.DB_NAME, 1);
 
       req.onupgradeneeded = () => {
@@ -51,18 +47,36 @@ export class SOSService {
     });
   }
 
-  /** Retourne l’instance de DB */
+  /** Retourne la DB existante ou l’ouvre */
   private async getDB(): Promise<IDBDatabase> {
     this.dbPromise ??= this.openDB();
     return this.dbPromise;
   }
 
-  /** Ajoute une alerte dans la base */
+  /** Méthodes helper pour IndexedDB */
+  private getAlert(store: IDBObjectStore, id: number): Promise<SosAlert | undefined> {
+    return new Promise((resolve, reject) => {
+      const req = store.get(id);
+      req.onsuccess = () => resolve(req.result as SosAlert | undefined);
+      req.onerror = () => reject(new Error(req.error?.message ?? 'Erreur lecture IndexedDB'));
+    });
+  }
+
+  private putAlert(store: IDBObjectStore, alert: SosAlert): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const req = store.put(alert);
+      req.onsuccess = () => resolve();
+      req.onerror = () => reject(new Error(req.error?.message ?? 'Erreur update IndexedDB'));
+    });
+  }
+
+  /** Sauvegarde une alerte */
   private async save(alert: SosAlert): Promise<SosAlert> {
     const db = await this.getDB();
-    return new Promise<SosAlert>((resolve, reject) => {
-      const tx = db.transaction(this.STORE, 'readwrite');
-      const store = tx.objectStore(this.STORE);
+    const tx = db.transaction(this.STORE, 'readwrite');
+    const store = tx.objectStore(this.STORE);
+
+    return new Promise((resolve, reject) => {
       const req = store.add(alert);
       req.onsuccess = () => resolve({ ...alert, id: req.result as number });
       req.onerror = () => reject(new Error(req.error?.message ?? 'Erreur IndexedDB'));
@@ -72,44 +86,34 @@ export class SOSService {
   /** Met à jour une alerte */
   private async update(id: number, partial: Partial<SosAlert>): Promise<void> {
     const db = await this.getDB();
-    return new Promise<void>((resolve, reject) => {
-      const tx = db.transaction(this.STORE, 'readwrite');
-      const store = tx.objectStore(this.STORE);
-      const getReq = store.get(id);
+    const tx = db.transaction(this.STORE, 'readwrite');
+    const store = tx.objectStore(this.STORE);
 
-      getReq.onsuccess = () => {
-        const current = getReq.result as SosAlert | undefined;
-        if (!current) return resolve();
-        const updated = { ...current, ...partial };
-        const putReq = store.put(updated);
-        putReq.onsuccess = () => resolve();
-        putReq.onerror = () =>
-          reject(new Error(putReq.error?.message ?? 'Erreur update IndexedDB'));
-      };
-
-      getReq.onerror = () => reject(new Error(getReq.error?.message ?? 'Erreur lecture IndexedDB'));
-    });
+    const current = await this.getAlert(store, id);
+    if (!current) return;
+    await this.putAlert(store, { ...current, ...partial });
   }
 
   /** Récupère toutes les alertes */
   async getAllAlerts(): Promise<SosAlert[]> {
     const db = await this.getDB();
-    return new Promise<SosAlert[]>((resolve, reject) => {
-      const tx = db.transaction(this.STORE, 'readonly');
-      const store = tx.objectStore(this.STORE);
+    const tx = db.transaction(this.STORE, 'readonly');
+    const store = tx.objectStore(this.STORE);
+
+    return new Promise((resolve, reject) => {
       const req = store.getAll();
       req.onsuccess = () => resolve(req.result as SosAlert[]);
       req.onerror = () => reject(new Error(req.error?.message ?? 'Erreur lecture IndexedDB'));
     });
   }
 
-  /** Récupère les alertes PENDING */
+  /** Filtre les alertes PENDING */
   private async getPendingAlerts(): Promise<SosAlert[]> {
     const all = await this.getAllAlerts();
     return all.filter((a) => a.status === 'PENDING');
   }
 
-  /** Envoi d'une alerte */
+  /** Envoie d’une alerte */
   async sendAlert(payload: {
     userId?: string;
     message?: string;
@@ -128,24 +132,19 @@ export class SOSService {
     if (navigator.onLine) {
       await this.update(saved.id!, { status: 'SENT' });
       return { alert: { ...saved, status: 'SENT' } };
-    } else {
-      return { offline: true, alert: saved };
     }
+    return { offline: true, alert: saved };
   }
 
-  /** Retry automatique au retour réseau */
+  /** Retry automatique */
   async retryPendingAlerts(): Promise<void> {
     const pendings = await this.getPendingAlerts();
-    if (pendings.length === 0) return;
+    if (!pendings.length) return;
 
     await Promise.all(
-      pendings.map(async (a) => {
-        try {
-          await this.update(a.id!, { status: 'SENT', timestamp: new Date().toISOString() });
-        } catch (err) {
-          console.warn('Échec mise à jour alerte', err);
-        }
-      })
+      pendings.map((a) =>
+        this.update(a.id!, { status: 'SENT', timestamp: new Date().toISOString() })
+      )
     );
   }
 }

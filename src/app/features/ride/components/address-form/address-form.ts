@@ -93,7 +93,7 @@ export class AddressForm {
         console.error(err);
         alert("Impossible d'obtenir la position. Vérifiez les permissions.");
       },
-      { enableHighAccuracy: true, timeout: 8000 }
+      { enableHighAccuracy: true, timeout: 20000 }
     );
   }
 

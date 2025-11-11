@@ -25,7 +25,7 @@ export class EstimationService {
 
   getEstimate(pickup: RidePoint, dropoff: RidePoint) {
     const dist = haversine(pickup.lat, pickup.lng, dropoff.lat, dropoff.lng);
-    const distance = parseFloat(dist.toFixed(1));
+    const distance = Number.parseFloat(dist.toFixed(1)); // au lieu de parseFloat
     const eta = Math.max(3, Math.round(distance * 3.5 + 2)); // env. 3.5 min/km + base
     const price = Math.round((this.baseFare + this.perKm * distance) * this.trafficFactor);
     return of({ distance, eta, price }).pipe(delay(200));

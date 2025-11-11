@@ -31,13 +31,13 @@ import { SOSButton } from '../../sos-button/sos-button';
       <div class="flex space-x-4">
         <button
           routerLink="/ride/history"
-          class=" hover:text-blue-800 transition text-lg text-slate-800 border border-1 border-green-400 bg-green-200 w-52 rounded-lg p-0.5"
+          class=" hover:text-blue-800 transition text-lg text-slate-800 border border-1 border-green-400 bg-green-200 w-56 rounded-lg p-0.5"
         >
           Historique de mes trajets
         </button>
         <button
           routerLink="/sos"
-          class=" hover:text-blue-800 transition text-lg text-slate-800 border border-1 border-red-400 bg-red-200 w-52 rounded-lg p-0.5"
+          class=" hover:text-blue-800 transition text-lg text-slate-800 border border-1 border-red-400 bg-red-200 w-56 rounded-lg p-0.5"
         >
           Historique de mes alertes
         </button>
@@ -85,7 +85,7 @@ import { SOSButton } from '../../sos-button/sos-button';
 export class RideSearchPage {
   private readonly store = inject(RideSearchStore);
 
-  // ✅ On passe à des signaux Angular v20+
+  // On passe à des signaux Angular v20+
   readonly showModal = signal(false);
 
   // Getters basés sur les signaux du store
@@ -107,7 +107,10 @@ export class RideSearchPage {
   handleConfirm(data: Ride) {
     // récupérer distance & prix à partir du store/estimate service
     const distance = this.store.distance();
-    const price = distance !== null ? Math.round(distance * 400) : undefined;
+    // Tarif réaliste (F CFA)
+    const tarifParKm = 50; // F CFA par km
+    const fraisFixe = 500; // F CFA fixe
+    const price = distance ? Math.round(distance * tarifParKm + fraisFixe) : undefined;
 
     const ride = {
       id: Date.now().toString(),
@@ -123,7 +126,7 @@ export class RideSearchPage {
       isPaid: false,
     };
 
-    // ✅ Ajoute le trajet dans le store
+    // Ajoute le trajet dans le store
     this.store.addRide(ride);
 
     console.log('✅ Nouveau trajet ajouté à l’historique :', ride);

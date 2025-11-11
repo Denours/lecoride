@@ -16,15 +16,15 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./otp-input.scss'],
 })
 export class OtpInput {
-  inputs = Array(6);
+  inputs = new Array(6);
   @ViewChildren('otp') otpEls!: QueryList<ElementRef>;
-  private values = Array(6).fill('');
+  private values = new Array(6).fill('');
 
   @Output() complete = new EventEmitter<string>();
 
   onInput(e: Event, idx: number) {
     const input = e.target as HTMLInputElement;
-    const val = input.value.replace(/\D/g, '');
+    const val = input.value.replaceAll(/\D/g, '');
     if (!val) {
       this.values[idx] = '';
       return;
@@ -60,7 +60,7 @@ export class OtpInput {
 
   onPaste(e: ClipboardEvent) {
     const text = e.clipboardData?.getData('text') ?? '';
-    const digits = text.replace(/\D/g, '').slice(0, 6);
+    const digits = text.replaceAll(/\D/g, '').slice(0, 6);
 
     for (let i = 0; i < digits.length; i++) {
       const el = this.otpEls.toArray()[i].nativeElement;

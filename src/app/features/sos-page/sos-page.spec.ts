@@ -1,18 +1,24 @@
+import { SOSPage } from './sos-page';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter, withRouterConfig } from '@angular/router';
 
-import { SosPage } from './sos-page';
-
-describe('SosPage', () => {
-  let component: SosPage;
-  let fixture: ComponentFixture<SosPage>;
+describe('SOSPage', () => {
+  let component: SOSPage;
+  let fixture: ComponentFixture<SOSPage>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SosPage]
-    })
-    .compileComponents();
+      imports: [SOSPage], // ton composant standalone
+      providers: [
+        provideHttpClient(), // fournit HttpClient
+        provideHttpClientTesting(), // fournit le backend de test pour HttpClient
+        provideRouter([], withRouterConfig({ onSameUrlNavigation: 'reload' })),
+      ],
+    }).compileComponents();
 
-    fixture = TestBed.createComponent(SosPage);
+    fixture = TestBed.createComponent(SOSPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

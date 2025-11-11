@@ -1,49 +1,40 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { App } from './app';
 import { ToastService, ToastMessage } from './features/auth/services/toast';
-import { of } from 'rxjs';
-import { RouterOutlet } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { Subject } from 'rxjs';
+import { DestroyRef } from '@angular/core';
 
-describe('App', () => {
-  let fixture: ComponentFixture<App>;
+describe('App Component', () => {
   let component: App;
-  let toastServiceMock: Partial<ToastService>;
+  let messages$: Subject<ToastMessage>;
 
-  beforeEach(async () => {
-    // Mock du service ToastService
-    toastServiceMock = {
-      messages$: of(), // aucun message initial
-    };
+  beforeEach(() => {
+    messages$ = new Subject<ToastMessage>();
 
-    await TestBed.configureTestingModule({
-      imports: [App, CommonModule, RouterOutlet],
-      providers: [{ provide: ToastService, useValue: toastServiceMock }],
-    }).compileComponents();
+    TestBed.configureTestingModule({
+      imports: [App],
+      providers: [
+        { provide: ToastService, useValue: { messages$: messages$ } },
+        { provide: DestroyRef, useValue: { onDestroy: () => {} } },
+      ],
+    });
 
-    fixture = TestBed.createComponent(App);
+    const fixture = TestBed.createComponent(App);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it('should create the app', () => {
-    expect(component).toBeTruthy();
-  });
+  it('✅ devrait afficher et retirer un toast (durée personnalisée)', fakeAsync(() => {
+    messages$.next({ text: 'Test Toast', duration: 1000 });
+    expect(component.toasts.length).toBe(1); // this.toasts.push(msg)
+    tick(1000); // exécute setTimeout → this.toasts.filter(...) couvert
+    expect(component.toasts.length).toBe(0);
+  }));
 
-  it('should render router-outlet', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('router-outlet')).toBeTruthy();
-  });
-
-  it('should display toast messages when ToastService emits', () => {
-    // Ajouter un message manuellement pour tester l'affichage
-    const testMsg: ToastMessage = { text: 'Test toast', duration: 1000 };
-    component.toasts.push(testMsg);
-    fixture.detectChanges();
-
-    const compiled = fixture.nativeElement as HTMLElement;
-    const toastEl = compiled.querySelector('.toast');
-    expect(toastEl).toBeTruthy();
-    expect(toastEl?.textContent).toContain('Test toast');
-  });
+  it('✅ devrait utiliser la durée par défaut si aucune n’est précisée', fakeAsync(() => {
+    messages$.next({ text: 'Sans durée' });
+    expect(component.toasts.length).toBe(1); // this.toasts.push(msg)
+    tick(3000); // exécute setTimeout avec msg.duration ?? 3000
+    expect(component.toasts.length).toBe(0); // this.toasts.filter(...) couvert
+  }));
 });

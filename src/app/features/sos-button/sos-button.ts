@@ -1,6 +1,7 @@
 import { Component, signal, inject } from '@angular/core';
 import { SOSService } from '../ride/services/sos';
 import { RouterLink } from '@angular/router';
+import { SosAlert } from '../ride/models/sos-alert.type';
 
 @Component({
   selector: 'app-sos-button',
@@ -25,13 +26,18 @@ export class SOSButton {
 
     if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
 
-    const payload = {
+    const payload: SosAlert = {
       userId: 'local-user',
       timestamp: new Date().toISOString(),
+      status: 'PENDING', // ou 'SENT', selon ton cas d'utilisation
     };
 
     try {
-      const res = await this.sosService.sendAlert(payload);
+      const res = await this.sosService.sendAlert({
+        userId: payload.userId,
+        message: 'Alerte SOS déclenchée',
+        location: null,
+      });
       if (res.offline) {
         this.showToast('📴 Mode hors ligne : alerte enregistrée localement.');
       } else {

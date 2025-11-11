@@ -55,6 +55,9 @@ export class EstimatePanel {
     this.estimatedPrice.set(prix);
     this.distanceChange.emit(distance);
     this.priceChange.emit(prix);
+
+    // 🔥 Synchronisation avec le store
+    this.store.setEstimate(distance, prix);
   }
 
   private getDistanceFromLatLonInKm(lat1: number, lon1: number, lat2: number, lon2: number) {

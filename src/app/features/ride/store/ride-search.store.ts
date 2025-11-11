@@ -16,6 +16,8 @@ export class RideSearchStore {
   distance = signal<number | null>(null); //  distance en km
   duration = signal<number | null>(null); //  durée en minutes
 
+  estimatedPrice = signal<number | null>(null);
+
   // Nouveau : liste des trajets réservés
   readonly rides = signal<Ride[]>([]);
   setPickup(p: RidePoint | null) {
@@ -26,6 +28,10 @@ export class RideSearchStore {
     this.dropoff.set(d);
   }
 
+  setEstimate(distance: number, price: number): void {
+    this.distance.set(distance);
+    this.estimatedPrice.set(price);
+  }
   // Ajoute un trajet dans l’historique
   addRide(ride: Ride): void {
     this.rides.update((oldRides) => [...oldRides, ride]);
